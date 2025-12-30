@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Sistema profesional de gestión de inventario y conteo de mercadería">
     <title>Sistema de Inventario - Gestión y Conteo</title>
-    
+
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
-    
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- jsPDF Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-    
+
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <!-- Toast Notifications Container -->
     <div id="toast-container" class="toast-container"></div>
@@ -58,7 +61,7 @@
     <!-- Main Content -->
     <main class="main">
         <div class="container">
-            
+
             <!-- Dashboard View -->
             <section id="dashboard-view" class="view active">
                 <div class="view-header">
@@ -78,7 +81,7 @@
                             <h3 class="stat-value" id="total-products">0</h3>
                         </div>
                     </div>
-                    
+
                     <div class="stat-card stat-card-success">
                         <div class="stat-icon">✅</div>
                         <div class="stat-content">
@@ -86,7 +89,7 @@
                             <h3 class="stat-value" id="total-stock">0</h3>
                         </div>
                     </div>
-                    
+
                     <div class="stat-card stat-card-warning">
                         <div class="stat-icon">⚠️</div>
                         <div class="stat-content">
@@ -94,7 +97,7 @@
                             <h3 class="stat-value" id="low-stock">0</h3>
                         </div>
                     </div>
-                    
+
                     <div class="stat-card stat-card-info">
                         <div class="stat-icon">📊</div>
                         <div class="stat-content">
@@ -119,7 +122,8 @@
                     <h2 class="view-title">Gestión de Inventario</h2>
                     <div class="view-actions">
                         <div class="search-box">
-                            <input type="text" id="search-input" class="search-input" placeholder="Buscar por nombre o SKU...">
+                            <input type="text" id="search-input" class="search-input"
+                                placeholder="Buscar por nombre o SKU...">
                             <span class="search-icon">🔍</span>
                         </div>
                         <select id="category-filter" class="filter-select">
@@ -163,7 +167,8 @@
                 <!-- Quick Search for Counting -->
                 <div class="count-search-section">
                     <div class="search-box search-box-large">
-                        <input type="text" id="count-search-input" class="search-input" placeholder="Buscar producto para contar (SKU o Nombre)...">
+                        <input type="text" id="count-search-input" class="search-input"
+                            placeholder="Buscar producto para contar (SKU o Nombre)...">
                         <span class="search-icon">🔍</span>
                     </div>
                 </div>
@@ -185,36 +190,41 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="product-sku" class="form-label">SKU / ID *</label>
-                                <input type="text" id="product-sku" class="form-input" required placeholder="Ej: PROD-001">
+                                <input type="text" id="product-sku" class="form-input" required
+                                    placeholder="Ej: PROD-001">
                                 <span class="form-error" id="sku-error"></span>
                             </div>
 
                             <div class="form-group">
                                 <label for="product-name" class="form-label">Nombre del Producto *</label>
-                                <input type="text" id="product-name" class="form-input" required placeholder="Ej: Laptop HP">
+                                <input type="text" id="product-name" class="form-input" required
+                                    placeholder="Ej: Laptop HP">
                             </div>
 
                             <div class="form-group">
                                 <label for="product-category" class="form-label">Categoría *</label>
                                 <select id="product-category" class="form-input" required>
                                     <option value="">Seleccionar categoría</option>
-                                    <option value="Electrónica">Electrónica</option>
-                                    <option value="Ropa">Ropa</option>
-                                    <option value="Alimentos">Alimentos</option>
-                                    <option value="Muebles">Muebles</option>
-                                    <option value="Herramientas">Herramientas</option>
+                                    <option value="Bodies">Bodies</option>
+                                    <option value="Pijamas">Pijamas</option>
+                                    <option value="Conjuntos">Conjuntos</option>
+                                    <option value="Accesorios">Accesorios</option>
+                                    <option value="Calzado">Calzado</option>
+                                    <option value="Abrigos">Abrigos</option>
                                     <option value="Otros">Otros</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
                                 <label for="product-stock" class="form-label">Stock Inicial *</label>
-                                <input type="number" id="product-stock" class="form-input" required min="0" placeholder="0">
+                                <input type="number" id="product-stock" class="form-input" required min="0"
+                                    placeholder="0">
                             </div>
 
                             <div class="form-group">
                                 <label for="product-location" class="form-label">Ubicación *</label>
-                                <input type="text" id="product-location" class="form-input" required placeholder="Ej: Almacén A - Estante 3">
+                                <input type="text" id="product-location" class="form-input" required
+                                    placeholder="Ej: Almacén A - Estante 3">
                             </div>
                         </div>
 
@@ -244,7 +254,7 @@
             </div>
             <form id="edit-form" class="modal-form">
                 <input type="hidden" id="edit-product-id">
-                
+
                 <div class="form-group">
                     <label for="edit-product-sku" class="form-label">SKU / ID *</label>
                     <input type="text" id="edit-product-sku" class="form-input" required>
@@ -258,11 +268,12 @@
                 <div class="form-group">
                     <label for="edit-product-category" class="form-label">Categoría *</label>
                     <select id="edit-product-category" class="form-input" required>
-                        <option value="Electrónica">Electrónica</option>
-                        <option value="Ropa">Ropa</option>
-                        <option value="Alimentos">Alimentos</option>
-                        <option value="Muebles">Muebles</option>
-                        <option value="Herramientas">Herramientas</option>
+                        <option value="Bodies">Bodies</option>
+                        <option value="Pijamas">Pijamas</option>
+                        <option value="Conjuntos">Conjuntos</option>
+                        <option value="Accesorios">Accesorios</option>
+                        <option value="Calzado">Calzado</option>
+                        <option value="Abrigos">Abrigos</option>
                         <option value="Otros">Otros</option>
                     </select>
                 </div>
@@ -300,4 +311,5 @@
     <!-- Main Script -->
     <script src="script.js"></script>
 </body>
+
 </html>

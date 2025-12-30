@@ -3,48 +3,48 @@
 // ===================================
 const INITIAL_INVENTORY = [
     {
-        id: 'PROD-001',
-        name: 'Laptop Dell XPS 15',
-        category: 'Electrónica',
+        id: 'BODY-001',
+        name: 'Body Manga Corta Blanco',
+        category: 'Bodies',
         systemStock: 25,
         physicalCount: 0,
-        location: 'Almacén A - Estante 1',
+        location: 'Estante A1 - Fila 1',
         lastUpdated: new Date().toISOString()
     },
     {
-        id: 'PROD-002',
-        name: 'Mouse Logitech MX Master',
-        category: 'Electrónica',
+        id: 'PIJ-002',
+        name: 'Pijama Enterizo Ositos',
+        category: 'Pijamas',
         systemStock: 8,
         physicalCount: 0,
-        location: 'Almacén A - Estante 2',
+        location: 'Estante A2 - Fila 2',
         lastUpdated: new Date().toISOString()
     },
     {
-        id: 'PROD-003',
-        name: 'Silla Ergonómica Premium',
-        category: 'Muebles',
+        id: 'CONJ-003',
+        name: 'Conjunto Pantalón y Remera',
+        category: 'Conjuntos',
         systemStock: 15,
         physicalCount: 0,
-        location: 'Almacén B - Zona 1',
+        location: 'Estante B1 - Fila 1',
         lastUpdated: new Date().toISOString()
     },
     {
-        id: 'PROD-004',
-        name: 'Teclado Mecánico RGB',
-        category: 'Electrónica',
+        id: 'ACC-004',
+        name: 'Gorro de Algodón',
+        category: 'Accesorios',
         systemStock: 5,
         physicalCount: 0,
-        location: 'Almacén A - Estante 3',
+        location: 'Estante C1 - Fila 3',
         lastUpdated: new Date().toISOString()
     },
     {
-        id: 'PROD-005',
-        name: 'Monitor LG 27" 4K',
-        category: 'Electrónica',
+        id: 'CALZ-005',
+        name: 'Zapatitos Tejidos',
+        category: 'Calzado',
         systemStock: 12,
         physicalCount: 0,
-        location: 'Almacén A - Estante 1',
+        location: 'Estante C2 - Fila 1',
         lastUpdated: new Date().toISOString()
     }
 ];
@@ -112,12 +112,12 @@ class InventoryApp {
     switchView(viewName) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        
+
         document.getElementById(`${viewName}-view`).classList.add('active');
         document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
-        
+
         this.currentView = viewName;
-        
+
         if (viewName === 'dashboard') this.renderDashboard();
         if (viewName === 'inventory') this.renderInventoryTable();
         if (viewName === 'count') this.renderCountMode();
@@ -212,7 +212,7 @@ class InventoryApp {
     populateCategoryFilter() {
         const categories = [...new Set(this.inventory.map(item => item.category))];
         const select = document.getElementById('category-filter');
-        
+
         categories.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat;
@@ -270,7 +270,7 @@ class InventoryApp {
     updateCount(productId) {
         const input = document.getElementById(`count-${productId}`);
         const count = parseInt(input.value) || 0;
-        
+
         const product = this.inventory.find(p => p.id === productId);
         if (product) {
             product.physicalCount = count;
@@ -286,7 +286,7 @@ class InventoryApp {
     // ===================================
     handleProductSubmit(e) {
         e.preventDefault();
-        
+
         const newProduct = {
             id: document.getElementById('product-sku').value.trim(),
             name: document.getElementById('product-name').value.trim(),
@@ -331,17 +331,17 @@ class InventoryApp {
 
     handleEditSubmit(e) {
         e.preventDefault();
-        
+
         const productId = document.getElementById('edit-product-id').value;
         const product = this.inventory.find(p => p.id === productId);
-        
+
         if (product) {
             product.name = document.getElementById('edit-product-name').value.trim();
             product.category = document.getElementById('edit-product-category').value;
             product.systemStock = parseInt(document.getElementById('edit-product-stock').value);
             product.location = document.getElementById('edit-product-location').value.trim();
             product.lastUpdated = new Date().toISOString();
-            
+
             this.saveInventory();
             this.closeModal();
             this.renderInventoryTable();
@@ -352,7 +352,7 @@ class InventoryApp {
 
     deleteProduct(productId) {
         if (!confirm('¿Está seguro de eliminar este producto?')) return;
-        
+
         this.inventory = this.inventory.filter(p => p.id !== productId);
         this.saveInventory();
         this.renderInventoryTable();
@@ -374,7 +374,7 @@ class InventoryApp {
         // Título
         doc.setFontSize(18);
         doc.text('Reporte de Inventario', 14, 20);
-        
+
         doc.setFontSize(11);
         doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
         doc.text(`Total de Productos: ${this.inventory.length}`, 14, 34);
@@ -410,9 +410,9 @@ class InventoryApp {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
         toast.textContent = message;
-        
+
         container.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => toast.remove(), 300);
