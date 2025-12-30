@@ -4,39 +4,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sistema profesional de gestión de inventario y conteo de mercadería">
-    <title>Sistema de Inventario - Gestión y Conteo</title>
+    <meta name="description" content="Sistema de inventario de ropa y accesorios de bebé">
+    <title>Inventario Bebé - Sistema Completo</title>
 
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👶</text></svg>">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- jsPDF Libraries -->
+    <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <!-- Toast Notifications Container -->
+    <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Header -->
     <header class="header">
         <div class="container">
             <div class="header-content">
+                <button class="hamburger-btn" id="hamburger-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
                 <div class="logo">
-                    <span class="logo-icon">📦</span>
-                    <h1 class="logo-text">InvenControl</h1>
+                    <span class="logo-icon">👶</span>
                 </div>
-                <nav class="nav">
+                <nav class="nav" id="nav-menu">
                     <button class="nav-btn active" data-view="dashboard">
                         <span class="nav-icon">📊</span>
                         <span class="nav-text">Dashboard</span>
@@ -45,18 +48,17 @@
                         <span class="nav-icon">📋</span>
                         <span class="nav-text">Inventario</span>
                     </button>
-                    <button class="nav-btn" data-view="count">
-                        <span class="nav-icon">🔍</span>
-                        <span class="nav-text">Conteo</span>
-                    </button>
                     <button class="nav-btn" data-view="register">
                         <span class="nav-icon">➕</span>
-                        <span class="nav-text">Registrar</span>
+                        <span class="nav-text">Agregar</span>
                     </button>
                 </nav>
             </div>
         </div>
     </header>
+
+    <!-- Overlay para cerrar menú -->
+    <div class="nav-overlay" id="nav-overlay"></div>
 
     <!-- Main Content -->
     <main class="main">
@@ -65,17 +67,24 @@
             <!-- Dashboard View -->
             <section id="dashboard-view" class="view active">
                 <div class="view-header">
-                    <h2 class="view-title">Dashboard General</h2>
-                    <button class="btn btn-primary" id="export-pdf-btn">
-                        <span class="btn-icon">📄</span>
-                        Exportar Reporte PDF
-                    </button>
+                    <h2 class="view-title">Dashboard</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-success" id="export-json-btn">
+                            <span class="btn-icon">💾</span>
+                            Exportar JSON
+                        </button>
+                        <button class="btn btn-info" id="import-json-btn">
+                            <span class="btn-icon">📥</span>
+                            Importar JSON
+                        </button>
+                        <input type="file" id="import-json-input" accept=".json" style="display: none;">
+                    </div>
                 </div>
 
                 <!-- Stats Cards -->
                 <div class="stats-grid">
                     <div class="stat-card stat-card-primary">
-                        <div class="stat-icon">📦</div>
+                        <div class="stat-icon">👕</div>
                         <div class="stat-content">
                             <p class="stat-label">Total Productos</p>
                             <h3 class="stat-value" id="total-products">0</h3>
@@ -83,35 +92,42 @@
                     </div>
 
                     <div class="stat-card stat-card-success">
-                        <div class="stat-icon">✅</div>
+                        <div class="stat-icon">📦</div>
                         <div class="stat-content">
-                            <p class="stat-label">Stock Total</p>
-                            <h3 class="stat-value" id="total-stock">0</h3>
+                            <p class="stat-label">Cantidad Total</p>
+                            <h3 class="stat-value" id="total-quantity">0</h3>
                         </div>
                     </div>
 
                     <div class="stat-card stat-card-warning">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-content">
+                            <p class="stat-label">Valor Total</p>
+                            <h3 class="stat-value" id="total-value">$0</h3>
+                        </div>
+                    </div>
+
+                    <div class="stat-card stat-card-info">
                         <div class="stat-icon">⚠️</div>
                         <div class="stat-content">
                             <p class="stat-label">Stock Bajo</p>
                             <h3 class="stat-value" id="low-stock">0</h3>
                         </div>
                     </div>
-
-                    <div class="stat-card stat-card-info">
-                        <div class="stat-icon">📊</div>
-                        <div class="stat-content">
-                            <p class="stat-label">Conteos Realizados</p>
-                            <h3 class="stat-value" id="counted-items">0</h3>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Alerts Section -->
-                <div class="alerts-section">
-                    <h3 class="section-title">Alertas de Stock Bajo</h3>
-                    <div id="alerts-container" class="alerts-container">
-                        <!-- Dynamic alerts will be inserted here -->
+                <!-- Export Buttons -->
+                <div class="export-section">
+                    <h3 class="section-title">Generar Reportes</h3>
+                    <div class="export-buttons">
+                        <button class="btn btn-primary btn-large" id="export-pdf-btn">
+                            <span class="btn-icon">📄</span>
+                            Exportar a PDF
+                        </button>
+                        <button class="btn btn-success btn-large" id="export-excel-btn">
+                            <span class="btn-icon">📊</span>
+                            Exportar a Excel
+                        </button>
                     </div>
                 </div>
             </section>
@@ -119,99 +135,54 @@
             <!-- Inventory View -->
             <section id="inventory-view" class="view">
                 <div class="view-header">
-                    <h2 class="view-title">Gestión de Inventario</h2>
+                    <h2 class="view-title">Inventario Completo</h2>
                     <div class="view-actions">
                         <div class="search-box">
-                            <input type="text" id="search-input" class="search-input"
-                                placeholder="Buscar por nombre o SKU...">
+                            <input type="text" id="search-input" class="search-input" placeholder="Buscar...">
                             <span class="search-icon">🔍</span>
                         </div>
                         <select id="category-filter" class="filter-select">
                             <option value="">Todas las Categorías</option>
+                            <option value="Bodies">Bodies</option>
+                            <option value="Pijamas">Pijamas</option>
+                            <option value="Conjuntos">Conjuntos</option>
+                            <option value="Accesorios">Accesorios</option>
+                            <option value="Calzado">Calzado</option>
+                            <option value="Abrigos">Abrigos</option>
+                            <option value="Otros">Otros</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Inventory Table -->
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>SKU</th>
-                                <th>Nombre</th>
-                                <th>Categoría</th>
-                                <th>Stock Sistema</th>
-                                <th>Conteo Real</th>
-                                <th>Diferencia</th>
-                                <th>Ubicación</th>
-                                <th>Última Act.</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventory-table-body">
-                            <!-- Dynamic rows will be inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Count Mode View -->
-            <section id="count-view" class="view">
-                <div class="view-header">
-                    <h2 class="view-title">Modo Conteo - Auditoría Física</h2>
-                    <div class="count-info">
-                        <span class="count-badge">Modo Auditoría Activo</span>
-                    </div>
-                </div>
-
-                <!-- Quick Search for Counting -->
-                <div class="count-search-section">
-                    <div class="search-box search-box-large">
-                        <input type="text" id="count-search-input" class="search-input"
-                            placeholder="Buscar producto para contar (SKU o Nombre)...">
-                        <span class="search-icon">🔍</span>
-                    </div>
-                </div>
-
-                <!-- Count Items Grid -->
-                <div id="count-items-grid" class="count-grid">
-                    <!-- Dynamic count cards will be inserted here -->
+                <!-- Inventory Grid -->
+                <div id="inventory-grid" class="inventory-grid">
+                    <!-- Dynamic cards will be inserted here -->
                 </div>
             </section>
 
             <!-- Register View -->
             <section id="register-view" class="view">
                 <div class="view-header">
-                    <h2 class="view-title">Registrar Nuevo Producto</h2>
+                    <h2 class="view-title">Agregar Producto</h2>
                 </div>
 
                 <div class="form-container">
                     <form id="product-form" class="product-form">
                         <div class="form-grid">
+                            <!-- SKU -->
                             <div class="form-group">
-                                <label for="product-sku" class="form-label">SKU / ID * (Generado
-                                    Automáticamente)</label>
+                                <label for="product-sku" class="form-label">SKU (Generado Automáticamente) *</label>
                                 <div style="display: flex; gap: 0.5rem;">
-                                    <input type="text" id="product-sku" class="form-input" required readonly
-                                        placeholder="Se generará automáticamente" style="flex: 1;">
-                                    <button type="button" class="btn btn-secondary" id="generate-sku-btn"
-                                        title="Generar SKU">
-                                        🔄
-                                    </button>
+                                    <input type="text" id="product-sku" class="form-input" required readonly>
+                                    <button type="button" class="btn btn-secondary" id="generate-sku-btn">🔄</button>
                                 </div>
-                                <span class="form-error" id="sku-error"></span>
                             </div>
 
-                            <div class="form-group">
-                                <label for="product-name" class="form-label">Nombre del Producto *</label>
-                                <input type="text" id="product-name" class="form-input" required
-                                    placeholder="Ej: Laptop HP">
-                            </div>
-
+                            <!-- Categoría -->
                             <div class="form-group">
                                 <label for="product-category" class="form-label">Categoría *</label>
                                 <select id="product-category" class="form-input" required>
-                                    <option value="">Seleccionar categoría</option>
+                                    <option value="">Seleccionar...</option>
                                     <option value="Bodies">Bodies</option>
                                     <option value="Pijamas">Pijamas</option>
                                     <option value="Conjuntos">Conjuntos</option>
@@ -222,16 +193,53 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label for="product-stock" class="form-label">Stock Inicial *</label>
-                                <input type="number" id="product-stock" class="form-input" required min="0"
-                                    placeholder="0">
+                            <!-- Detalle -->
+                            <div class="form-group form-group-full">
+                                <label for="product-detail" class="form-label">Detalle del Producto *</label>
+                                <textarea id="product-detail" class="form-input form-textarea" required
+                                    placeholder="Ej: Body manga corta, color blanco, talla 0-3 meses"></textarea>
                             </div>
 
+                            <!-- Cantidad -->
                             <div class="form-group">
-                                <label for="product-location" class="form-label">Ubicación *</label>
-                                <input type="text" id="product-location" class="form-input" required
-                                    placeholder="Ej: Almacén A - Estante 3">
+                                <label for="product-quantity" class="form-label">Cantidad *</label>
+                                <input type="number" id="product-quantity" class="form-input" required min="0"
+                                    value="1">
+                            </div>
+
+                            <!-- Precio de Venta -->
+                            <div class="form-group">
+                                <label for="product-price" class="form-label">Precio de Venta *</label>
+                                <input type="number" id="product-price" class="form-input" required min="0" step="0.01"
+                                    placeholder="0.00">
+                            </div>
+
+                            <!-- Foto -->
+                            <div class="form-group form-group-full">
+                                <label class="form-label">Foto del Producto</label>
+                                <div class="photo-upload">
+                                    <div class="photo-preview" id="photo-preview">
+                                        <span class="photo-placeholder">📷 Sin foto</span>
+                                        <img id="preview-image" style="display: none;">
+                                    </div>
+                                    <div class="photo-buttons">
+                                        <button type="button" class="btn btn-primary" id="camera-btn">
+                                            <span class="btn-icon">📸</span>
+                                            Tomar Foto
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" id="upload-btn">
+                                            <span class="btn-icon">🖼️</span>
+                                            Subir Imagen
+                                        </button>
+                                        <button type="button" class="btn btn-danger" id="remove-photo-btn"
+                                            style="display: none;">
+                                            <span class="btn-icon">🗑️</span>
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                    <input type="file" id="file-input" accept="image/*" style="display: none;">
+                                    <input type="hidden" id="product-photo">
+                                </div>
                             </div>
                         </div>
 
@@ -242,7 +250,7 @@
                             </button>
                             <button type="button" class="btn btn-secondary btn-large" id="reset-form-btn">
                                 <span class="btn-icon">🔄</span>
-                                Limpiar Formulario
+                                Limpiar
                             </button>
                         </div>
                     </form>
@@ -252,25 +260,38 @@
         </div>
     </main>
 
+    <!-- Camera Modal -->
+    <div id="camera-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 class="modal-title">Tomar Foto</h3>
+                <button class="modal-close" id="close-camera-btn">&times;</button>
+            </div>
+            <div class="camera-container">
+                <video id="camera-video" autoplay playsinline></video>
+                <canvas id="camera-canvas" style="display: none;"></canvas>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary btn-large" id="capture-btn">
+                    <span class="btn-icon">📸</span>
+                    Capturar
+                </button>
+                <button class="btn btn-secondary btn-large" id="cancel-camera-btn">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Modal -->
     <div id="edit-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Editar Producto</h3>
-                <button class="modal-close" id="close-modal-btn">&times;</button>
+                <button class="modal-close" id="close-edit-modal-btn">&times;</button>
             </div>
-            <form id="edit-form" class="modal-form">
+            <form id="edit-form">
                 <input type="hidden" id="edit-product-id">
-
-                <div class="form-group">
-                    <label for="edit-product-sku" class="form-label">SKU / ID *</label>
-                    <input type="text" id="edit-product-sku" class="form-input" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="edit-product-name" class="form-label">Nombre *</label>
-                    <input type="text" id="edit-product-name" class="form-input" required>
-                </div>
 
                 <div class="form-group">
                     <label for="edit-product-category" class="form-label">Categoría *</label>
@@ -286,13 +307,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="edit-product-stock" class="form-label">Stock Sistema *</label>
-                    <input type="number" id="edit-product-stock" class="form-input" required min="0">
+                    <label for="edit-product-detail" class="form-label">Detalle *</label>
+                    <textarea id="edit-product-detail" class="form-input form-textarea" required></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="edit-product-location" class="form-label">Ubicación *</label>
-                    <input type="text" id="edit-product-location" class="form-input" required>
+                    <label for="edit-product-quantity" class="form-label">Cantidad *</label>
+                    <input type="number" id="edit-product-quantity" class="form-input" required min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-product-price" class="form-label">Precio de Venta *</label>
+                    <input type="number" id="edit-product-price" class="form-input" required min="0" step="0.01">
                 </div>
 
                 <div class="modal-actions">
@@ -311,11 +337,10 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p class="footer-text">© 2025 InvenControl - Sistema de Gestión de Inventario | Desarrollado con ❤️</p>
+            <p class="footer-text">© 2025 BabyStock - Sistema de Inventario | Desarrollado con ❤️</p>
         </div>
     </footer>
 
-    <!-- Main Script -->
     <script src="script.js"></script>
 </body>
 
