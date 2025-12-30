@@ -31,7 +31,7 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <button class="hamburger-btn" id="hamburger-btn">
+                <button class="hamburger-btn" id="hamburger-btn" onclick="app.toggleMenu()">
                     <span></span>
                     <span></span>
                     <span></span>
@@ -39,19 +39,22 @@
                 <div class="logo">
                     <span class="logo-icon">👶</span>
                 </div>
-                <button class="theme-toggle" id="theme-toggle" title="Cambiar tema">
+                <button class="theme-toggle" id="theme-toggle" title="Cambiar tema" onclick="app.toggleTheme()">
                     <span class="theme-icon">🌙</span>
                 </button>
                 <nav class="nav" id="nav-menu">
-                    <button class="nav-btn active" data-view="dashboard">
+                    <button class="nav-close-btn" id="nav-close-btn" style="display: none;">&times;</button>
+                    <button class="nav-btn active" data-view="dashboard"
+                        onclick="app.switchView('dashboard'); app.closeMenu()">
                         <span class="nav-icon">📊</span>
                         <span class="nav-text">Dashboard</span>
                     </button>
-                    <button class="nav-btn" data-view="inventory">
+                    <button class="nav-btn" data-view="inventory"
+                        onclick="app.switchView('inventory'); app.closeMenu()">
                         <span class="nav-icon">📋</span>
                         <span class="nav-text">Inventario</span>
                     </button>
-                    <button class="nav-btn" data-view="register">
+                    <button class="nav-btn" data-view="register" onclick="app.switchView('register'); app.closeMenu()">
                         <span class="nav-icon">➕</span>
                         <span class="nav-text">Agregar</span>
                     </button>

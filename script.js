@@ -59,20 +59,23 @@ class BabyStockApp {
     // EVENT LISTENERS
     // ===================================
     setupEventListeners() {
-        // Navegación
+        // Navegación (Manejado por onclick en HTML para mejor soporte responsive)
+        /*
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.switchView(e.target.closest('.nav-btn').dataset.view);
                 this.closeMenu(); // Cerrar menú al cambiar de vista
             });
         });
+        */
 
-        // Menú hamburguesa
-        document.getElementById('hamburger-btn').addEventListener('click', () => this.toggleMenu());
-        document.getElementById('nav-overlay').addEventListener('click', () => this.closeMenu());
+        // Menú hamburguesa (Manejado por onclick en HTML)
+        // document.getElementById('hamburger-btn').addEventListener('click', () => this.toggleMenu());
+        // document.getElementById('nav-overlay').addEventListener('click', () => this.closeMenu());
+        // document.getElementById('nav-close-btn').addEventListener('click', () => this.closeMenu());
 
-        // Tema día/noche
-        document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
+        // Tema día/noche (Manejado por onclick en HTML)
+        // document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
 
         // Formulario
         document.getElementById('product-form').addEventListener('submit', (e) => this.handleSubmit(e));
@@ -129,6 +132,7 @@ class BabyStockApp {
     // MENÚ HAMBURGUESA
     // ===================================
     toggleMenu() {
+        console.log('Toggle menu called');
         const nav = document.getElementById('nav-menu');
         const overlay = document.getElementById('nav-overlay');
         const hamburger = document.getElementById('hamburger-btn');
@@ -542,4 +546,4 @@ class BabyStockApp {
 // ===================================
 // INICIALIZAR
 // ===================================
-const app = new BabyStockApp();
+window.app = new BabyStockApp();

@@ -862,6 +862,7 @@ body:not(.dark-mode) .theme-icon::before {
     }
 
     /* Navegación como sidebar */
+    /* Navegación como sidebar */
     .nav {
         position: fixed;
         top: 0;
@@ -870,11 +871,39 @@ body:not(.dark-mode) .theme-icon::before {
         height: 100vh;
         background: var(--bg-primary);
         flex-direction: column;
-        padding: 5rem 1rem 1rem;
+        padding: 4rem 1rem 1rem;
         box-shadow: var(--shadow-xl);
         transition: left 0.3s ease;
-        z-index: 1000;
+        z-index: 2000;
+        /* Aumentado para estar sobre todo */
         gap: 0.5rem;
+    }
+
+    .nav-close-btn {
+        display: block !important;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: var(--text-primary);
+        cursor: pointer;
+        padding: 0.5rem;
+        line-height: 1;
+        z-index: 2001;
+    }
+
+    .hamburger-btn {
+        display: flex;
+        z-index: 2001;
+        /* Asegurar que esté encima si se necesita */
+        position: relative;
+    }
+
+    .nav-overlay {
+        z-index: 1999;
+        /* Debajo del nav */
     }
 
     .nav.active {
