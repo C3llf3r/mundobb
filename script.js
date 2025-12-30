@@ -31,6 +31,7 @@ class BabyStockApp {
         this.currentView = 'dashboard';
         this.cameraStream = null;
         this.currentPhoto = '';
+        this.initTheme();
         this.init();
     }
 
@@ -68,6 +69,9 @@ class BabyStockApp {
         document.getElementById('hamburger-btn').addEventListener('click', () => this.toggleMenu());
         document.getElementById('nav-overlay').addEventListener('click', () => this.closeMenu());
 
+        // Tema día/noche
+        document.getElementById('theme-toggle').addEventListener('click', () => this.toggleTheme());
+
         // Formulario
         document.getElementById('product-form').addEventListener('submit', (e) => this.handleSubmit(e));
         document.getElementById('reset-form-btn').addEventListener('click', () => this.resetForm());
@@ -100,6 +104,23 @@ class BabyStockApp {
         document.getElementById('close-edit-modal-btn').addEventListener('click', () => this.closeEditModal());
         document.getElementById('cancel-edit-btn').addEventListener('click', () => this.closeEditModal());
         document.getElementById('edit-form').addEventListener('submit', (e) => this.handleEdit(e));
+    }
+
+    // ===================================
+    // TEMA DÍA/NOCHE
+    // ===================================
+    initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    }
+
+    toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        this.showToast(isDark ? 'Modo oscuro activado' : 'Modo claro activado', 'info');
     }
 
     // ===================================
