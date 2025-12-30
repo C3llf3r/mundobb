@@ -193,21 +193,21 @@ class BabyStockApp {
         const grid = document.getElementById('inventory-grid');
 
         if (data.length === 0) {
-            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No hay productos</p>';
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No se encontraron productos.</p>';
             return;
         }
 
         grid.innerHTML = data.map(item => `
             <div class="product-card">
                 <div class="product-image">
-                    ${item.photo ? `<img src="${item.photo}" alt="${item.name}">` : '📦'}
+                    ${item.photo ? `<img src="${item.photo}" alt="${item.name}">` : '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--text-muted); background:var(--bg-tertiary);">Sin Imagen</div>'}
                 </div>
                 <div class="product-info">
                     <div class="product-sku">${item.id}</div>
                     <div class="product-category">${item.category}</div>
                     <div class="product-detail">${item.name || 'Sin nombre'}</div>
-                    <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">📏 Talla: <strong>${item.size || 'N/A'}</strong></div>
-                    ${item.observation ? `<div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">📝 ${item.observation}</div>` : ''}
+                    <div style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Talla: <strong>${item.size || 'N/A'}</strong></div>
+                    ${item.observation ? `<div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.observation}</div>` : ''}
                     <div class="product-stats">
                         <div class="product-stat">
                             <div class="product-stat-label">Cantidad</div>
@@ -218,9 +218,9 @@ class BabyStockApp {
                             <div class="product-stat-value">$${item.price.toFixed(2)}</div>
                         </div>
                     </div>
-                    <div class="product-actions">
-                        <button class="btn btn-primary btn-small" onclick="app.editProduct('${item.id}')">✏️ Editar</button>
-                        <button class="btn btn-danger btn-small" onclick="app.deleteProduct('${item.id}')">🗑️</button>
+                    <div class="product-actions" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                        <button class="btn btn-outline" style="flex:1;" onclick="app.editProduct('${item.id}')">Editar</button>
+                        <button class="btn btn-danger btn-outline" style="flex:1;" onclick="app.deleteProduct('${item.id}')">Eliminar</button>
                     </div>
                 </div>
             </div>
