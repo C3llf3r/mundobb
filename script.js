@@ -5,7 +5,8 @@ const INITIAL_INVENTORY = [
     {
         id: 'BODY-001',
         category: 'Bodies',
-        detail: 'Body manga corta blanco, 100% algodón, talla 0-3 meses',
+        name: 'Body Blanco',
+        observation: 'Stock disponible en almacén principal',
         quantity: 15,
         price: 12.99,
         photo: '',
@@ -14,7 +15,8 @@ const INITIAL_INVENTORY = [
     {
         id: 'PIJ-001',
         category: 'Pijamas',
-        detail: 'Pijama enterizo con ositos, talla 3-6 meses',
+        name: 'Pijama Ositos',
+        observation: 'Muy popular, considerar reposición',
         quantity: 8,
         price: 18.50,
         photo: '',
@@ -192,12 +194,13 @@ class BabyStockApp {
         grid.innerHTML = data.map(item => `
             <div class="product-card">
                 <div class="product-image">
-                    ${item.photo ? `<img src="${item.photo}" alt="${item.detail}">` : '📦'}
+                    ${item.photo ? `<img src="${item.photo}" alt="${item.name}">` : '📦'}
                 </div>
                 <div class="product-info">
                     <div class="product-sku">${item.id}</div>
                     <div class="product-category">${item.category}</div>
-                    <div class="product-detail">${item.detail}</div>
+                    <div class="product-detail">${item.name || 'Sin nombre'}</div>
+                    ${item.observation ? `<div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">📝 ${item.observation}</div>` : ''}
                     <div class="product-stats">
                         <div class="product-stat">
                             <div class="product-stat-label">Cantidad</div>
@@ -344,9 +347,10 @@ class BabyStockApp {
         const newProduct = {
             id: document.getElementById('product-sku').value,
             category: document.getElementById('product-category').value,
-            detail: document.getElementById('product-detail').value,
-            quantity: parseInt(document.getElementById('product-quantity').value),
-            price: parseFloat(document.getElementById('product-price').value),
+            name: document.getElementById('product-name').value,
+            observation: document.getElementById('product-observation').value,
+            quantity: parseInt(document.getElementById('product-quantity').value) || 0,
+            price: parseFloat(document.getElementById('product-price').value) || 0,
             photo: this.currentPhoto,
             createdAt: new Date().toISOString()
         };
@@ -375,7 +379,8 @@ class BabyStockApp {
 
         document.getElementById('edit-product-id').value = product.id;
         document.getElementById('edit-product-category').value = product.category;
-        document.getElementById('edit-product-detail').value = product.detail;
+        document.getElementById('edit-product-name').value = product.name || '';
+        document.getElementById('edit-product-observation').value = product.observation || '';
         document.getElementById('edit-product-quantity').value = product.quantity;
         document.getElementById('edit-product-price').value = product.price;
 
@@ -390,9 +395,10 @@ class BabyStockApp {
 
         if (product) {
             product.category = document.getElementById('edit-product-category').value;
-            product.detail = document.getElementById('edit-product-detail').value;
-            product.quantity = parseInt(document.getElementById('edit-product-quantity').value);
-            product.price = parseFloat(document.getElementById('edit-product-price').value);
+            product.name = document.getElementById('edit-product-name').value;
+            product.observation = document.getElementById('edit-product-observation').value;
+            product.quantity = parseInt(document.getElementById('edit-product-quantity').value) || 0;
+            product.price = parseFloat(document.getElementById('edit-product-price').value) || 0;
 
             this.saveInventory();
             this.closeEditModal();
@@ -474,7 +480,7 @@ class BabyStockApp {
         const tableData = this.inventory.map(item => [
             item.id,
             item.category,
-            item.detail.substring(0, 40) + '...',
+            item.name || '',
             item.quantity,
             `$${item.price.toFixed(2)}`,
             `$${(item.quantity * item.price).toFixed(2)}`
@@ -482,7 +488,7 @@ class BabyStockApp {
 
         doc.autoTable({
             startY: 40,
-            head: [['SKU', 'Categoría', 'Detalle', 'Cant.', 'Precio', 'Total']],
+            head: [['SKU', 'Categoría', 'Producto', 'Cant.', 'Precio', 'Total']],
             body: tableData,
             theme: 'striped',
             headStyles: { fillColor: [37, 99, 235] }
@@ -499,7 +505,8 @@ class BabyStockApp {
         const data = this.inventory.map(item => ({
             'SKU': item.id,
             'Categoría': item.category,
-            'Detalle': item.detail,
+            'Producto': item.name || '',
+            'Observación': item.observation || '',
             'Cantidad': item.quantity,
             'Precio': item.price,
             'Total': item.quantity * item.price,

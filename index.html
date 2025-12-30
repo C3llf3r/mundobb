@@ -196,11 +196,17 @@
                                 </select>
                             </div>
 
-                            <!-- Detalle -->
+                            <!-- Producto (Nombre) -->
+                            <div class="form-group">
+                                <label for="product-name" class="form-label">Producto</label>
+                                <input type="text" id="product-name" class="form-input" placeholder="Ej: Body Blanco">
+                            </div>
+
+                            <!-- Observación -->
                             <div class="form-group form-group-full">
-                                <label for="product-detail" class="form-label">Detalle del Producto</label>
-                                <textarea id="product-detail" class="form-input form-textarea"
-                                    placeholder="Ej: Body manga corta, color blanco, talla 0-3 meses"></textarea>
+                                <label for="product-observation" class="form-label">Observación</label>
+                                <textarea id="product-observation" class="form-input form-textarea"
+                                    placeholder="Notas adicionales, comentarios, etc."></textarea>
                             </div>
 
                             <!-- Cantidad -->
@@ -309,8 +315,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="edit-product-detail" class="form-label">Detalle</label>
-                    <textarea id="edit-product-detail" class="form-input form-textarea"></textarea>
+                    <label for="edit-product-name" class="form-label">Producto</label>
+                    <input type="text" id="edit-product-name" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-product-observation" class="form-label">Observación</label>
+                    <textarea id="edit-product-observation" class="form-input form-textarea"></textarea>
                 </div>
 
                 <div class="form-group">

@@ -11,13 +11,13 @@
     --danger: #ef4444;
     --info: #06b6d4;
 
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-tertiary: #f1f5f9;
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #f1f3f5;
+    --bg-tertiary: #e9ecef;
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --text-muted: #94a3b8;
-    --border: #e2e8f0;
+    --border: #dee2e6;
 
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -89,6 +89,10 @@ body.dark-mode {
     z-index: 100;
 }
 
+body.dark-mode .header {
+    background: rgba(30, 41, 59, 0.95);
+}
+
 .header-content {
     display: flex;
     justify-content: space-between;
@@ -101,6 +105,8 @@ body.dark-mode {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    flex: 1;
+    justify-content: center;
 }
 
 .logo-icon {
