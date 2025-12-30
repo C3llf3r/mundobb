@@ -6,6 +6,7 @@ const INITIAL_INVENTORY = [
         id: 'BODY-001',
         category: 'Bodies',
         name: 'Body Blanco',
+        size: '0-3 m',
         observation: 'Stock disponible en almacén principal',
         quantity: 15,
         price: 12.99,
@@ -16,6 +17,7 @@ const INITIAL_INVENTORY = [
         id: 'PIJ-001',
         category: 'Pijamas',
         name: 'Pijama Ositos',
+        size: '3-6 m',
         observation: 'Muy popular, considerar reposición',
         quantity: 8,
         price: 18.50,
@@ -204,6 +206,7 @@ class BabyStockApp {
                     <div class="product-sku">${item.id}</div>
                     <div class="product-category">${item.category}</div>
                     <div class="product-detail">${item.name || 'Sin nombre'}</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">📏 Talla: <strong>${item.size || 'N/A'}</strong></div>
                     ${item.observation ? `<div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">📝 ${item.observation}</div>` : ''}
                     <div class="product-stats">
                         <div class="product-stat">
@@ -352,6 +355,7 @@ class BabyStockApp {
             id: document.getElementById('product-sku').value,
             category: document.getElementById('product-category').value,
             name: document.getElementById('product-name').value,
+            size: document.getElementById('product-size').value,
             observation: document.getElementById('product-observation').value,
             quantity: parseInt(document.getElementById('product-quantity').value) || 0,
             price: parseFloat(document.getElementById('product-price').value) || 0,
@@ -384,6 +388,7 @@ class BabyStockApp {
         document.getElementById('edit-product-id').value = product.id;
         document.getElementById('edit-product-category').value = product.category;
         document.getElementById('edit-product-name').value = product.name || '';
+        document.getElementById('edit-product-size').value = product.size || '';
         document.getElementById('edit-product-observation').value = product.observation || '';
         document.getElementById('edit-product-quantity').value = product.quantity;
         document.getElementById('edit-product-price').value = product.price;
@@ -400,6 +405,7 @@ class BabyStockApp {
         if (product) {
             product.category = document.getElementById('edit-product-category').value;
             product.name = document.getElementById('edit-product-name').value;
+            product.size = document.getElementById('edit-product-size').value;
             product.observation = document.getElementById('edit-product-observation').value;
             product.quantity = parseInt(document.getElementById('edit-product-quantity').value) || 0;
             product.price = parseFloat(document.getElementById('edit-product-price').value) || 0;
@@ -485,6 +491,7 @@ class BabyStockApp {
             item.id,
             item.category,
             item.name || '',
+            item.size || '',
             item.quantity,
             `$${item.price.toFixed(2)}`,
             `$${(item.quantity * item.price).toFixed(2)}`
@@ -492,7 +499,7 @@ class BabyStockApp {
 
         doc.autoTable({
             startY: 40,
-            head: [['SKU', 'Categoría', 'Producto', 'Cant.', 'Precio', 'Total']],
+            head: [['SKU', 'Cat.', 'Producto', 'Talla', 'Cant.', 'Precio', 'Total']],
             body: tableData,
             theme: 'striped',
             headStyles: { fillColor: [37, 99, 235] }
@@ -510,6 +517,7 @@ class BabyStockApp {
             'SKU': item.id,
             'Categoría': item.category,
             'Producto': item.name || '',
+            'Talla': item.size || '',
             'Observación': item.observation || '',
             'Cantidad': item.quantity,
             'Precio': item.price,
