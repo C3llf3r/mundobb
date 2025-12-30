@@ -92,6 +92,10 @@ class InventoryApp {
         document.getElementById('product-form').addEventListener('submit', (e) => this.handleProductSubmit(e));
         document.getElementById('reset-form-btn').addEventListener('click', () => this.resetForm());
 
+        // Generación automática de SKU
+        document.getElementById('generate-sku-btn').addEventListener('click', () => this.generateSKU());
+        document.getElementById('product-category').addEventListener('change', () => this.generateSKU());
+
         // Búsqueda y filtros
         document.getElementById('search-input').addEventListener('input', (e) => this.filterInventory(e.target.value));
         document.getElementById('category-filter').addEventListener('change', (e) => this.filterByCategory(e.target.value));
@@ -279,6 +283,48 @@ class InventoryApp {
             this.renderCountMode();
             this.showToast('Conteo actualizado correctamente', 'success');
         }
+    }
+
+    // ===================================
+    // GENERACIÓN AUTOMÁTICA DE SKU
+    // ===================================
+    generateSKU() {
+        const categorySelect = document.getElementById('product-category');
+        const skuInput = document.getElementById('product-sku');
+        const category = categorySelect.value;
+
+        if (!category) {
+            skuInput.value = '';
+            this.showToast('Seleccione una categoría primero', 'info');
+            return;
+        }
+
+        // Prefijos por categoría
+        const categoryPrefixes = {
+            'Bodies': 'BODY',
+            'Pijamas': 'PIJ',
+            'Conjuntos': 'CONJ',
+            'Accesorios': 'ACC',
+            'Calzado': 'CALZ',
+            'Abrigos': 'ABR',
+            'Otros': 'OTR'
+        };
+
+        const prefix = categoryPrefixes[category] || 'PROD';
+
+        // Encontrar el siguiente número disponible para esta categoría
+        const existingSKUs = this.inventory
+            .filter(item => item.id.startsWith(prefix))
+            .map(item => {
+                const match = item.id.match(/\d+$/);
+                return match ? parseInt(match[0]) : 0;
+            });
+
+        const nextNumber = existingSKUs.length > 0 ? Math.max(...existingSKUs) + 1 : 1;
+        const newSKU = `${prefix}-${String(nextNumber).padStart(3, '0')}`;
+
+        skuInput.value = newSKU;
+        this.showToast(`SKU generado: ${newSKU}`, 'success');
     }
 
     // ===================================

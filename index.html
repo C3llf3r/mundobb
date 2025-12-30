@@ -189,9 +189,16 @@
                     <form id="product-form" class="product-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="product-sku" class="form-label">SKU / ID *</label>
-                                <input type="text" id="product-sku" class="form-input" required
-                                    placeholder="Ej: PROD-001">
+                                <label for="product-sku" class="form-label">SKU / ID * (Generado
+                                    Automáticamente)</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="product-sku" class="form-input" required readonly
+                                        placeholder="Se generará automáticamente" style="flex: 1;">
+                                    <button type="button" class="btn btn-secondary" id="generate-sku-btn"
+                                        title="Generar SKU">
+                                        🔄
+                                    </button>
+                                </div>
                                 <span class="form-error" id="sku-error"></span>
                             </div>
 
