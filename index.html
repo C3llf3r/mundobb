@@ -43,7 +43,7 @@
                     <span class="theme-icon"></span>
                 </button>
                 <nav class="nav" id="nav-menu">
-                    <button class="nav-close-btn" id="nav-close-btn">&times;</button>
+                    <button class="nav-close-btn" id="nav-close-btn" onclick="app.closeMenu()">&times;</button>
                     <button class="nav-btn active" data-view="dashboard"
                         onclick="app.switchView('dashboard'); app.closeMenu()">
                         Dashboard
@@ -61,7 +61,7 @@
     </header>
 
     <!-- Overlay para cerrar menú -->
-    <div class="nav-overlay" id="nav-overlay"></div>
+    <div class="nav-overlay" id="nav-overlay" onclick="app.closeMenu()"></div>
 
     <!-- Main Content -->
     <main class="main">

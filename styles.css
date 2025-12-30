@@ -212,8 +212,7 @@ body:not(.dark-mode) .theme-icon::before {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 999;
 }
 
@@ -751,8 +750,7 @@ body:not(.dark-mode) .theme-icon::before {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -900,6 +898,10 @@ body:not(.dark-mode) .theme-icon::before {
         gap: 0.25rem;
     }
 
+    .nav.active {
+        left: 0;
+    }
+
     .nav-close-btn {
         display: block !important;
         position: absolute;
@@ -920,11 +922,7 @@ body:not(.dark-mode) .theme-icon::before {
     }
 
     .nav-overlay {
-        z-index: 1999;
-    }
-
-    .nav.active {
-        left: 0;
+        z-index: 1500;
     }
 
     .nav-btn {
@@ -933,6 +931,8 @@ body:not(.dark-mode) .theme-icon::before {
         padding: 0.875rem 1rem;
         font-size: 1rem;
         border-radius: var(--radius-md);
+        position: relative;
+        z-index: 2002;
     }
 
     .header-content {
