@@ -875,7 +875,10 @@ body:not(.dark-mode) .theme-icon::before {
         position: fixed;
         top: 0;
         left: -100%;
-        width: 280px;
+        width: 85%;
+        /* Adaptable */
+        max-width: 300px;
+        /* No muy ancho en tablets */
         height: 100vh;
         background: var(--bg-primary);
         flex-direction: column;
