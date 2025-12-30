@@ -868,7 +868,7 @@ body:not(.dark-mode) .theme-icon::before {
         left: -100%;
         width: 280px;
         height: 100vh;
-        background: white;
+        background: var(--bg-primary);
         flex-direction: column;
         padding: 5rem 1rem 1rem;
         box-shadow: var(--shadow-xl);
@@ -901,12 +901,47 @@ body:not(.dark-mode) .theme-icon::before {
         font-size: 1.5rem;
     }
 
+    .view-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .view-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
     .table-container {
         overflow-x: auto;
     }
 
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .export-section {
+        padding: 1.5rem;
     }
 
     .export-buttons {
@@ -919,5 +954,92 @@ body:not(.dark-mode) .theme-icon::before {
 
     .inventory-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .product-card {
+        margin-bottom: 0;
+    }
+
+    /* Formularios */
+    .form-container {
+        padding: 1.5rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-group-full {
+        grid-column: 1;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    /* Photo upload */
+    .photo-buttons {
+        flex-direction: column;
+    }
+
+    .photo-buttons .btn {
+        width: 100%;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+        max-height: 85vh;
+    }
+
+    .modal-large {
+        max-width: 95%;
+    }
+
+    /* Camera */
+    .camera-container {
+        margin: 0.5rem 0;
+    }
+
+    /* Header actions */
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .header-actions .btn {
+        width: 100%;
+    }
+
+    /* Container */
+    .container {
+        padding: 0 0.75rem;
+    }
+
+    /* Main */
+    .main {
+        padding: 1rem 0;
+    }
+}
+
+/* Tablets y pantallas medianas */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .inventory-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
