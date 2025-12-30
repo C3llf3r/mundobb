@@ -870,7 +870,6 @@ body:not(.dark-mode) .theme-icon::before {
     }
 
     /* Navegación como sidebar */
-    /* Navegación como sidebar */
     .nav {
         position: fixed;
         top: 0;

@@ -228,9 +228,12 @@ class BabyStockApp {
     }
 
     filterInventory(searchTerm) {
+        const term = searchTerm.toLowerCase();
         const filtered = this.inventory.filter(item =>
-            item.detail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.id.toLowerCase().includes(searchTerm.toLowerCase())
+            (item.name && item.name.toLowerCase().includes(term)) ||
+            (item.id && item.id.toLowerCase().includes(term)) ||
+            (item.observation && item.observation.toLowerCase().includes(term)) ||
+            (item.size && item.size.toLowerCase().includes(term))
         );
         this.renderInventory(filtered);
     }
@@ -351,29 +354,34 @@ class BabyStockApp {
     handleSubmit(e) {
         e.preventDefault();
 
-        const newProduct = {
-            id: document.getElementById('product-sku').value,
-            category: document.getElementById('product-category').value,
-            name: document.getElementById('product-name').value,
-            size: document.getElementById('product-size').value,
-            observation: document.getElementById('product-observation').value,
-            quantity: parseInt(document.getElementById('product-quantity').value) || 0,
-            price: parseFloat(document.getElementById('product-price').value) || 0,
-            photo: this.currentPhoto,
-            createdAt: new Date().toISOString()
-        };
+        try {
+            const newProduct = {
+                id: document.getElementById('product-sku').value,
+                category: document.getElementById('product-category').value,
+                name: document.getElementById('product-name').value,
+                size: document.getElementById('product-size').value,
+                observation: document.getElementById('product-observation').value,
+                quantity: parseInt(document.getElementById('product-quantity').value) || 0,
+                price: parseFloat(document.getElementById('product-price').value) || 0,
+                photo: this.currentPhoto,
+                createdAt: new Date().toISOString()
+            };
 
-        if (this.inventory.some(p => p.id === newProduct.id)) {
-            this.showToast('El SKU ya existe', 'error');
-            return;
+            if (this.inventory.some(p => p.id === newProduct.id)) {
+                this.showToast('El SKU ya existe', 'error');
+                return;
+            }
+
+            this.inventory.push(newProduct);
+            this.saveInventory();
+            this.resetForm();
+            this.renderInventory();
+            this.renderDashboard();
+            this.showToast('Producto agregado exitosamente', 'success');
+        } catch (error) {
+            console.error(error);
+            this.showToast('Error al guardar: ' + error.message, 'error');
         }
-
-        this.inventory.push(newProduct);
-        this.saveInventory();
-        this.resetForm();
-        this.renderInventory();
-        this.renderDashboard();
-        this.showToast('Producto agregado exitosamente', 'success');
     }
 
     resetForm() {
@@ -477,60 +485,78 @@ class BabyStockApp {
     // EXPORTAR PDF
     // ===================================
     exportPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        try {
+            if (!window.jspdf) {
+                alert('La librería PDF no se ha cargado correctamente. Recarga la página.');
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-        doc.setFontSize(18);
-        doc.text('Inventario de Ropa de Bebé', 14, 20);
+            doc.setFontSize(18);
+            doc.text('Inventario de Ropa de Bebé', 14, 20);
 
-        doc.setFontSize(11);
-        doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
-        doc.text(`Total de Productos: ${this.inventory.length}`, 14, 34);
+            doc.setFontSize(11);
+            doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
+            doc.text(`Total de Productos: ${this.inventory.length}`, 14, 34);
 
-        const tableData = this.inventory.map(item => [
-            item.id,
-            item.category,
-            item.name || '',
-            item.size || '',
-            item.quantity,
-            `$${item.price.toFixed(2)}`,
-            `$${(item.quantity * item.price).toFixed(2)}`
-        ]);
+            const tableData = this.inventory.map(item => [
+                item.id,
+                item.category,
+                item.name || '',
+                item.size || '',
+                item.quantity,
+                `$${item.price.toFixed(2)}`,
+                `$${(item.quantity * item.price).toFixed(2)}`
+            ]);
 
-        doc.autoTable({
-            startY: 40,
-            head: [['SKU', 'Cat.', 'Producto', 'Talla', 'Cant.', 'Precio', 'Total']],
-            body: tableData,
-            theme: 'striped',
-            headStyles: { fillColor: [37, 99, 235] }
-        });
+            doc.autoTable({
+                startY: 40,
+                head: [['SKU', 'Cat.', 'Producto', 'Talla', 'Cant.', 'Precio', 'Total']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [37, 99, 235] }
+            });
 
-        doc.save(`inventario_${new Date().toISOString().split('T')[0]}.pdf`);
-        this.showToast('PDF generado exitosamente', 'success');
+            doc.save(`inventario_${new Date().toISOString().split('T')[0]}.pdf`);
+            this.showToast('PDF generado exitosamente', 'success');
+        } catch (error) {
+            console.error(error);
+            alert('Error al generar PDF: ' + error.message);
+        }
     }
 
     // ===================================
     // EXPORTAR EXCEL
     // ===================================
     exportExcel() {
-        const data = this.inventory.map(item => ({
-            'SKU': item.id,
-            'Categoría': item.category,
-            'Producto': item.name || '',
-            'Talla': item.size || '',
-            'Observación': item.observation || '',
-            'Cantidad': item.quantity,
-            'Precio': item.price,
-            'Total': item.quantity * item.price,
-            'Fecha Creación': new Date(item.createdAt).toLocaleDateString('es-ES')
-        }));
+        try {
+            if (typeof XLSX === 'undefined') {
+                alert('La librería Excel no se ha cargado. Recarga la página.');
+                return;
+            }
+            const data = this.inventory.map(item => ({
+                'SKU': item.id,
+                'Categoría': item.category,
+                'Producto': item.name || '',
+                'Talla': item.size || '',
+                'Observación': item.observation || '',
+                'Cantidad': item.quantity,
+                'Precio': item.price,
+                'Total': item.quantity * item.price,
+                'Fecha Creación': new Date(item.createdAt).toLocaleDateString('es-ES')
+            }));
 
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
 
-        XLSX.writeFile(wb, `inventario_${new Date().toISOString().split('T')[0]}.xlsx`);
-        this.showToast('Excel generado exitosamente', 'success');
+            XLSX.writeFile(wb, `inventario_${new Date().toISOString().split('T')[0]}.xlsx`);
+            this.showToast('Excel generado exitosamente', 'success');
+        } catch (error) {
+            console.error(error);
+            alert('Error al generar Excel: ' + error.message);
+        }
     }
 
     // ===================================
