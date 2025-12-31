@@ -136,10 +136,6 @@ class MundoBBStockApp {
         const filterHandler = () => this.filterInventory();
         document.getElementById('search-input').addEventListener('input', filterHandler);
         document.getElementById('category-filter').addEventListener('change', filterHandler);
-        document.getElementById('qty-op').addEventListener('change', filterHandler);
-        document.getElementById('qty-val').addEventListener('input', filterHandler);
-        document.getElementById('total-op').addEventListener('change', filterHandler);
-        document.getElementById('total-val').addEventListener('input', filterHandler);
 
         // Exportar CSV
         document.getElementById('export-csv-btn').addEventListener('click', () => this.exportCSV());
@@ -334,13 +330,6 @@ class MundoBBStockApp {
     filterInventory() {
         const searchTerm = document.getElementById('search-input').value.toLowerCase();
         const categoryFilter = document.getElementById('category-filter').value;
-        
-        // Filtros Numéricos
-        const qtyOp = document.getElementById('qty-op').value;
-        const qtyVal = parseFloat(document.getElementById('qty-val').value);
-        
-        const totalOp = document.getElementById('total-op').value;
-        const totalVal = parseFloat(document.getElementById('total-val').value);
 
         const filtered = this.inventory.filter(item => {
             // 1. Búsqueda Texto
@@ -353,19 +342,6 @@ class MundoBBStockApp {
 
             // 2. Categoría
             if (categoryFilter && item.category !== categoryFilter) return false;
-
-            // 3. Cantidad
-            if (!isNaN(qtyVal)) {
-                if (qtyOp === 'gt' && item.quantity <= qtyVal) return false;
-                if (qtyOp === 'lt' && item.quantity >= qtyVal) return false;
-            }
-
-            // 4. Precio Total
-            const total = item.quantity * item.price;
-            if (!isNaN(totalVal)) {
-                if (totalOp === 'gt' && total <= totalVal) return false;
-                if (totalOp === 'lt' && total >= totalVal) return false;
-            }
 
             return true;
         });
