@@ -60,7 +60,7 @@ class BabyStockApp {
             .replace(/'/g, "&#039;");
     }
 
-    async compressImage(base64Str, maxWidth = 800, quality = 0.7) {
+    async compressImage(base64Str, maxWidth = 600, quality = 0.7) {
         return new Promise((resolve) => {
             const img = new Image();
             img.src = base64Str;
@@ -344,7 +344,7 @@ class BabyStockApp {
 
         const prefixes = {
             'Ropa': 'ROP',
-            'Accesorio': 'ACC',
+            'Accesorios': 'ACC',
             'Otros': 'OTR'
         };
 
@@ -390,20 +390,21 @@ class BabyStockApp {
         const canvas = document.getElementById('camera-canvas');
         const context = canvas.getContext('2d');
 
-        // Limitar resolución de captura
-        const maxDim = 1024;
+        // Tamaño deseado
+        const size = 600;
         let w = video.videoWidth;
         let h = video.videoHeight;
         
-        if (w > maxDim || h > maxDim) {
-             const ratio = Math.min(maxDim / w, maxDim / h);
-             w *= ratio;
-             h *= ratio;
-        }
+        // Calcular recorte para 1:1 (centro)
+        const minDim = Math.min(w, h);
+        const sx = (w - minDim) / 2;
+        const sy = (h - minDim) / 2;
 
-        canvas.width = w;
-        canvas.height = h;
-        context.drawImage(video, 0, 0, w, h);
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Dibujar solo el cuadrado central y escalar a 600px
+        context.drawImage(video, sx, sy, minDim, minDim, 0, 0, size, size);
 
         const rawPhoto = canvas.toDataURL('image/jpeg', 0.8);
         const compressedPhoto = await this.compressImage(rawPhoto);
@@ -456,16 +457,12 @@ class BabyStockApp {
 
         try {
             const colorInput = document.getElementById('product-color').value.trim();
-            if (!colorInput) {
-                this.showToast('El color es obligatorio', 'error');
-                return;
-            }
 
             const newProduct = {
                 id: document.getElementById('product-sku').value,
                 category: document.getElementById('product-category').value,
                 name: document.getElementById('product-name').value.toUpperCase(),
-                color: colorInput.toUpperCase(),
+                color: colorInput ? colorInput.toUpperCase() : 'N/A',
                 size: document.getElementById('product-size').value,
                 observation: document.getElementById('product-observation').value,
                 quantity: parseInt(document.getElementById('product-quantity').value) || 0,
@@ -520,14 +517,10 @@ class BabyStockApp {
 
         if (product) {
             const colorInput = document.getElementById('edit-product-color').value.trim();
-            if (!colorInput) {
-                this.showToast('El color es obligatorio', 'error');
-                return;
-            }
 
             product.category = document.getElementById('edit-product-category').value;
             product.name = document.getElementById('edit-product-name').value.toUpperCase();
-            product.color = colorInput.toUpperCase();
+            product.color = colorInput ? colorInput.toUpperCase() : 'N/A';
             product.size = document.getElementById('edit-product-size').value;
             product.observation = document.getElementById('edit-product-observation').value;
             product.quantity = parseInt(document.getElementById('edit-product-quantity').value) || 0;
