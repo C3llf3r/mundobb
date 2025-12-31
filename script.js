@@ -37,6 +37,7 @@ class BabyStockApp {
         this.currentView = 'dashboard';
         this.cameraStream = null;
         this.currentPhoto = '';
+        this.sortDirection = 1; // 1: Asc, -1: Desc
         this.initTheme();
         this.init();
     }
@@ -129,8 +130,16 @@ class BabyStockApp {
         document.getElementById('product-category').addEventListener('change', () => this.generateSKU());
 
         // Búsqueda y filtros
-        document.getElementById('search-input').addEventListener('input', (e) => this.filterInventory(e.target.value));
-        document.getElementById('category-filter').addEventListener('change', (e) => this.filterByCategory(e.target.value));
+        const filterHandler = () => this.filterInventory();
+        document.getElementById('search-input').addEventListener('input', filterHandler);
+        document.getElementById('category-filter').addEventListener('change', filterHandler);
+        document.getElementById('qty-op').addEventListener('change', filterHandler);
+        document.getElementById('qty-val').addEventListener('input', filterHandler);
+        document.getElementById('total-op').addEventListener('change', filterHandler);
+        document.getElementById('total-val').addEventListener('input', filterHandler);
+
+        // Exportar CSV
+        document.getElementById('export-csv-btn').addEventListener('click', () => this.exportCSV());
 
         // Foto
         document.getElementById('camera-btn').addEventListener('click', () => this.openCamera());
@@ -269,67 +278,147 @@ class BabyStockApp {
     }
 
     // ===================================
-    // INVENTARIO
+    // INVENTARIO (LISTA / TABLA)
     // ===================================
     renderInventory(filteredData = null) {
         const data = filteredData || this.inventory;
-        const grid = document.getElementById('inventory-grid');
+        const tbody = document.getElementById('inventory-body');
+
+        if (!tbody) return; // Protección si la vista no ha cargado
 
         if (data.length === 0) {
-            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No se encontraron productos.</p>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No se encontraron productos.</td></tr>';
             return;
         }
 
-        grid.innerHTML = data.map(item => `
-            <div class="product-card">
-                <div class="product-image">
-                    ${item.photo ? `<img src="${item.photo}" alt="${this.escapeHtml(item.name)}">` : '<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:var(--text-muted); background:var(--bg-tertiary);">Sin Imagen</div>'}
-                </div>
-                <div class="product-info">
-                    <div class="product-sku">${this.escapeHtml(item.id)}</div>
-                    <div class="product-category">${this.escapeHtml(item.category)}</div>
-                    <div class="product-detail">${this.escapeHtml(item.name || 'Sin nombre')}</div>
-                    <div style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-secondary);">
-                        Color: <strong>${this.escapeHtml(item.color || 'N/A')}</strong> | Talla: <strong>${this.escapeHtml(item.size || 'N/A')}</strong>
-                    </div>
-                    ${item.observation ? `<div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">${this.escapeHtml(item.observation)}</div>` : ''}
-                    <div class="product-stats">
-                        <div class="product-stat">
-                            <div class="product-stat-label">Cantidad</div>
-                            <div class="product-stat-value">${item.quantity}</div>
+        tbody.innerHTML = data.map(item => {
+            const total = item.quantity * item.price;
+            return `
+            <tr>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="product-image" style="width: 40px; height: 40px; border-radius: var(--radius-sm); flex-shrink: 0;">
+                            ${item.photo ? `<img src="${item.photo}" alt="${this.escapeHtml(item.name)}">` : '<span style="font-size: 1.2rem;">📦</span>'}
                         </div>
-                        <div class="product-stat">
-                            <div class="product-stat-label">Precio</div>
-                            <div class="product-stat-value">$${item.price.toFixed(2)}</div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-primary);">${this.escapeHtml(item.name || 'Sin nombre')}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">
+                                ${this.escapeHtml(item.id)} | ${this.escapeHtml(item.category)} | ${this.escapeHtml(item.color)} | ${this.escapeHtml(item.size)}
+                            </div>
                         </div>
                     </div>
-                    <div class="product-actions" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                        <button class="btn btn-outline" style="flex:1;" onclick="app.editProduct('${this.escapeHtml(item.id)}')" aria-label="Editar">Editar</button>
-                        <button class="btn btn-danger btn-outline" style="flex:1;" onclick="app.deleteProduct('${this.escapeHtml(item.id)}')" aria-label="Eliminar">Eliminar</button>
+                </td>
+                <td style="font-weight: 500;">${item.quantity}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td style="font-weight: 600; color: var(--primary);">$${total.toFixed(2)}</td>
+                <td>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;" onclick="app.editProduct('${this.escapeHtml(item.id)}')" title="Editar">✏️</button>
+                        <button class="btn btn-danger btn-outline" style="padding: 0.25rem 0.5rem;" onclick="app.deleteProduct('${this.escapeHtml(item.id)}')" title="Eliminar">🗑️</button>
                     </div>
-                </div>
-            </div>
-        `).join('');
+                </td>
+            </tr>
+            `;
+        }).join('');
     }
 
-    filterInventory(searchTerm) {
-        const term = searchTerm.toLowerCase();
-        const filtered = this.inventory.filter(item =>
-            (item.name && item.name.toLowerCase().includes(term)) ||
-            (item.id && item.id.toLowerCase().includes(term)) ||
-            (item.observation && item.observation.toLowerCase().includes(term)) ||
-            (item.size && item.size.toLowerCase().includes(term))
-        );
+    sortInventory(field) {
+        if (field === 'name') {
+            this.sortDirection *= -1; // Alternar orden
+            this.inventory.sort((a, b) => {
+                const nameA = (a.name || '').toUpperCase();
+                const nameB = (b.name || '').toUpperCase();
+                if (nameA < nameB) return -1 * this.sortDirection;
+                if (nameA > nameB) return 1 * this.sortDirection;
+                return 0;
+            });
+            this.filterInventory(); // Re-renderizar manteniendo filtros
+            this.showToast(`Ordenado por nombre ${this.sortDirection === 1 ? 'Asc' : 'Desc'}`, 'info');
+        }
+    }
+
+    filterInventory() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        const categoryFilter = document.getElementById('category-filter').value;
+        
+        // Filtros Numéricos
+        const qtyOp = document.getElementById('qty-op').value;
+        const qtyVal = parseFloat(document.getElementById('qty-val').value);
+        
+        const totalOp = document.getElementById('total-op').value;
+        const totalVal = parseFloat(document.getElementById('total-val').value);
+
+        const filtered = this.inventory.filter(item => {
+            // 1. Búsqueda Texto
+            const matchesSearch = (
+                (item.name && item.name.toLowerCase().includes(searchTerm)) ||
+                (item.id && item.id.toLowerCase().includes(searchTerm)) ||
+                (item.color && item.color.toLowerCase().includes(searchTerm))
+            );
+            if (!matchesSearch) return false;
+
+            // 2. Categoría
+            if (categoryFilter && item.category !== categoryFilter) return false;
+
+            // 3. Cantidad
+            if (!isNaN(qtyVal)) {
+                if (qtyOp === 'gt' && item.quantity <= qtyVal) return false;
+                if (qtyOp === 'lt' && item.quantity >= qtyVal) return false;
+            }
+
+            // 4. Precio Total
+            const total = item.quantity * item.price;
+            if (!isNaN(totalVal)) {
+                if (totalOp === 'gt' && total <= totalVal) return false;
+                if (totalOp === 'lt' && total >= totalVal) return false;
+            }
+
+            return true;
+        });
+
         this.renderInventory(filtered);
     }
 
-    filterByCategory(category) {
-        if (!category) {
-            this.renderInventory();
+    // ===================================
+    // EXPORTAR CSV
+    // ===================================
+    exportCSV() {
+        if (this.inventory.length === 0) {
+            this.showToast('No hay datos para exportar', 'error');
             return;
         }
-        const filtered = this.inventory.filter(item => item.category === category);
-        this.renderInventory(filtered);
+
+        const headers = ['SKU', 'Categoría', 'Producto', 'Color', 'Talla', 'Observación', 'Cantidad', 'Precio Unitario', 'Precio Total', 'Fecha Creación'];
+        
+        const csvRows = [headers.join(',')];
+
+        this.inventory.forEach(item => {
+            const row = [
+                item.id,
+                item.category,
+                `"${(item.name || '').replace(/"/g, '""')}"`, // Escapar comillas en CSV
+                item.color || '',
+                item.size || '',
+                `"${(item.observation || '').replace(/"/g, '""')}"`,
+                item.quantity,
+                item.price.toFixed(2),
+                (item.quantity * item.price).toFixed(2),
+                item.createdAt
+            ];
+            csvRows.push(row.join(','));
+        });
+
+        const csvString = csvRows.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `inventario_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        this.showToast('CSV generado exitosamente', 'success');
     }
 
     // ===================================
@@ -390,28 +479,33 @@ class BabyStockApp {
         const canvas = document.getElementById('camera-canvas');
         const context = canvas.getContext('2d');
 
-        // Tamaño deseado
-        const size = 600;
+        // Configuración de Salida
+        const targetSize = 350; // Resolución final 350x350 px
+        
+        // Algoritmo de Escalado: Alta Calidad (Bicúbico/Lanczos según navegador)
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
+
         let w = video.videoWidth;
         let h = video.videoHeight;
         
-        // Calcular recorte para 1:1 (centro)
+        // Método: Recorte (Crop) 1:1 desde el centro
         const minDim = Math.min(w, h);
         const sx = (w - minDim) / 2;
         const sy = (h - minDim) / 2;
 
-        canvas.width = size;
-        canvas.height = size;
+        canvas.width = targetSize;
+        canvas.height = targetSize;
         
-        // Dibujar solo el cuadrado central y escalar a 600px
-        context.drawImage(video, sx, sy, minDim, minDim, 0, 0, size, size);
+        // Ejecutar Recorte + Escalado
+        context.drawImage(video, sx, sy, minDim, minDim, 0, 0, targetSize, targetSize);
 
-        const rawPhoto = canvas.toDataURL('image/jpeg', 0.8);
-        const compressedPhoto = await this.compressImage(rawPhoto);
+        // Formato de salida: JPG
+        const finalPhoto = canvas.toDataURL('image/jpeg', 0.8);
         
-        this.setPhoto(compressedPhoto);
+        this.setPhoto(finalPhoto);
         this.closeCamera();
-        this.showToast('Foto capturada exitosamente', 'success');
+        this.showToast('Foto capturada (350x350px)', 'success');
     }
 
     handleFileUpload(event) {

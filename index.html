@@ -127,24 +127,68 @@
                     </div>
                 </section>
 
-                <!-- Inventory View -->
-                <section id="inventory-view" class="view">
-                    <div class="view-header">
-                        <h2 class="view-title">Inventario</h2>
-                        <div class="view-actions">
-                            <div class="search-box">
-                                <input type="text" id="search-input" class="search-input" placeholder="Buscar producto...">
-                            </div>
+            <!-- Inventory View -->
+            <section id="inventory-view" class="view">
+                <div class="view-header">
+                    <h2 class="view-title">Inventario</h2>
+                    <div class="view-actions">
+                        <!-- Buscador General -->
+                        <div class="search-box">
+                            <input type="text" id="search-input" class="search-input" placeholder="Buscar producto...">
+                        </div>
+                        
+                        <!-- Filtros Avanzados -->
+                        <div class="advanced-filters" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
                             <select id="category-filter" class="filter-select">
-                                <option value="">Todas las Categorías</option>
+                                <option value="">Todas</option>
                                 <option value="Ropa">Ropa</option>
                                 <option value="Accesorios">Accesorios</option>
                                 <option value="Otros">Otros</option>
                             </select>
+
+                            <!-- Filtro Cantidad -->
+                            <div class="filter-group" style="display: flex; gap: 2px;">
+                                <select id="qty-op" class="filter-select" style="width: 60px; padding-right: 0;">
+                                    <option value="gt">&gt;</option>
+                                    <option value="lt">&lt;</option>
+                                </select>
+                                <input type="number" id="qty-val" class="form-input" placeholder="Cant." style="width: 70px;">
+                            </div>
+
+                            <!-- Filtro Total -->
+                            <div class="filter-group" style="display: flex; gap: 2px;">
+                                <select id="total-op" class="filter-select" style="width: 60px; padding-right: 0;">
+                                    <option value="gt">&gt;</option>
+                                    <option value="lt">&lt;</option>
+                                </select>
+                                <input type="number" id="total-val" class="form-input" placeholder="$ Total" style="width: 80px;">
+                            </div>
+                            
+                            <button class="btn btn-outline" id="export-csv-btn" title="Exportar CSV">
+                                📄 CSV
+                            </button>
                         </div>
                     </div>
-                    <div id="inventory-grid" class="inventory-grid"></div>
-                </section>
+                </div>
+
+                <!-- Inventory List Table -->
+                <div class="table-container">
+                    <table class="data-table" id="inventory-table">
+                        <thead>
+                            <tr>
+                                <th style="cursor: pointer;" onclick="app.sortInventory('name')">Producto ↕</th>
+                                <th>Cantidad</th>
+                                <th>P. Unit</th>
+                                <th>P. Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-body">
+                            <!-- Rows inserted by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
                 <!-- Register View -->
                 <section id="register-view" class="view">
