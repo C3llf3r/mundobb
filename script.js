@@ -56,6 +56,16 @@ class MundoBBStockApp {
         input.value = value;
     }
 
+    formatPriceInput(input) {
+        // Eliminar todo lo que no sea número
+        let value = input.value.replace(/\D/g, "");
+        // Formatear con comas para miles
+        if (value !== "") {
+            value = parseInt(value).toLocaleString("en-US");
+        }
+        input.value = value;
+    }
+
     formatCurrency(amount) {
         // Formato: CLP $1,500 (Sin decimales, coma para miles)
         return `CLP $${Math.round(amount).toLocaleString('en-US')}`;
@@ -113,8 +123,14 @@ class MundoBBStockApp {
         // Formulario
         document.getElementById('product-form').addEventListener('submit', (e) => this.handleSubmit(e));
         document.getElementById('reset-form-btn').addEventListener('click', () => this.resetForm());
-        document.getElementById('generate-sku-btn').addEventListener('click', () => this.generateSKU());
-        document.getElementById('product-category').addEventListener('change', () => this.generateSKU());
+        
+        // Generación automática de SKU
+        const skuTriggers = ['product-category', 'product-name', 'product-color', 'product-size'];
+        skuTriggers.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', () => this.generateSKU());
+            if (el && id === 'product-category') el.addEventListener('change', () => this.generateSKU()); // Para el select
+        });
 
         // Búsqueda y filtros
         const filterHandler = () => this.filterInventory();
@@ -400,28 +416,32 @@ class MundoBBStockApp {
     }
 
     // ===================================
-    // GENERACIÓN DE SKU
+    // GENERACIÓN DE SKU (INTELIGENTE)
     // ===================================
     generateSKU() {
         const category = document.getElementById('product-category').value;
-        if (!category) {
-            this.showToast('Seleccione una categoría primero', 'info');
-            return;
-        }
+        const name = document.getElementById('product-name').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const color = document.getElementById('product-color').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const size = document.getElementById('product-size').value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
 
+        // Prefijos de Categoría
         const prefixes = {
             'Ropa': 'ROP',
             'Accesorios': 'ACC',
             'Otros': 'OTR'
         };
+        const catCode = prefixes[category] || 'GEN';
 
-        const prefix = prefixes[category] || 'GEN';
-        const existingSKUs = this.inventory
-            .filter(item => item.id.startsWith(prefix))
-            .map(item => parseInt(item.id.split('-')[1]) || 0);
+        // Códigos de Atributos
+        const nameCode = name.substring(0, 4);
+        const colorCode = color.substring(0, 3);
+        const sizeCode = size; // Talla completa
 
-        const nextNumber = existingSKUs.length > 0 ? Math.max(...existingSKUs) + 1 : 1;
-        const newSKU = `${prefix}-${String(nextNumber).padStart(3, '0')}`;
+        // Construir SKU solo si hay datos suficientes
+        let newSKU = catCode;
+        if (nameCode) newSKU += `-${nameCode}`;
+        if (colorCode) newSKU += `-${colorCode}`;
+        if (sizeCode) newSKU += `-${sizeCode}`;
 
         document.getElementById('product-sku').value = newSKU;
     }
@@ -538,7 +558,7 @@ class MundoBBStockApp {
                 size: document.getElementById('product-size').value,
                 observation: document.getElementById('product-observation').value,
                 quantity: parseInt(document.getElementById('product-quantity').value) || 0,
-                price: parseFloat(document.getElementById('product-price').value) || 0,
+                price: parseFloat(document.getElementById('product-price').value.replace(/,/g, '')) || 0,
                 createdAt: new Date().toISOString()
             };
 
@@ -575,7 +595,10 @@ class MundoBBStockApp {
         document.getElementById('edit-product-size').value = product.size || '';
         document.getElementById('edit-product-observation').value = product.observation || '';
         document.getElementById('edit-product-quantity').value = product.quantity;
-        document.getElementById('edit-product-price').value = product.price;
+        
+        // Formatear precio con comas al abrir el modal
+        const priceVal = product.price || 0;
+        document.getElementById('edit-product-price').value = Math.round(priceVal).toLocaleString('en-US');
 
         document.getElementById('edit-modal').classList.add('active');
     }
@@ -595,7 +618,7 @@ class MundoBBStockApp {
             product.size = document.getElementById('edit-product-size').value;
             product.observation = document.getElementById('edit-product-observation').value;
             product.quantity = parseInt(document.getElementById('edit-product-quantity').value) || 0;
-            product.price = parseFloat(document.getElementById('edit-product-price').value) || 0;
+            product.price = parseFloat(document.getElementById('edit-product-price').value.replace(/,/g, '')) || 0;
 
             this.saveInventory();
             this.closeEditModal();
