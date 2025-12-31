@@ -323,6 +323,24 @@ body:not(.dark-mode) .theme-icon::before { content: '🌙'; }
     /* Improve touch targets */
     .nav-btn { padding: 1rem; }
     .form-input { font-size: 16px; } /* Prevent Zoom */
+
+    /* Camera Preview Responsive */
+    .camera-container {
+        margin: 0.5rem auto;
+        background: #000;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        width: 100%;
+        max-width: 350px;
+        aspect-ratio: 1 / 1;
+        position: relative;
+    }
+    
+    #camera-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 }
 
 /* Tablets y pantallas medianas */
