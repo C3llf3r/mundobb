@@ -11,7 +11,6 @@ const INITIAL_INVENTORY = [
         observation: 'Stock disponible en almacén principal',
         quantity: 15,
         price: 12.99,
-        photo: '',
         createdAt: new Date().toISOString()
     },
     {
@@ -23,7 +22,6 @@ const INITIAL_INVENTORY = [
         observation: 'Muy popular, considerar reposición',
         quantity: 8,
         price: 18.50,
-        photo: '',
         createdAt: new Date().toISOString()
     }
 ];
@@ -35,8 +33,6 @@ class BabyStockApp {
     constructor() {
         this.inventory = this.loadInventory();
         this.currentView = 'dashboard';
-        this.cameraStream = null;
-        this.currentPhoto = '';
         this.sortDirection = 1; // 1: Asc, -1: Desc
         this.initTheme();
         this.init();
@@ -59,30 +55,6 @@ class BabyStockApp {
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
-    }
-
-    async compressImage(base64Str, maxWidth = 600, quality = 0.7) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.src = base64Str;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-
-                if (width > maxWidth) {
-                    height = Math.round((height * maxWidth) / width);
-                    width = maxWidth;
-                }
-
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                resolve(canvas.toDataURL('image/jpeg', quality));
-            };
-            img.onerror = () => resolve(base64Str); // Fallback
-        });
     }
 
     // ===================================
@@ -140,17 +112,6 @@ class BabyStockApp {
 
         // Exportar CSV
         document.getElementById('export-csv-btn').addEventListener('click', () => this.exportCSV());
-
-        // Foto
-        document.getElementById('camera-btn').addEventListener('click', () => this.openCamera());
-        document.getElementById('upload-btn').addEventListener('click', () => document.getElementById('file-input').click());
-        document.getElementById('file-input').addEventListener('change', (e) => this.handleFileUpload(e));
-        document.getElementById('remove-photo-btn').addEventListener('click', () => this.removePhoto());
-
-        // Cámara modal
-        document.getElementById('close-camera-btn').addEventListener('click', () => this.closeCamera());
-        document.getElementById('cancel-camera-btn').addEventListener('click', () => this.closeCamera());
-        document.getElementById('capture-btn').addEventListener('click', () => this.capturePhoto());
 
         // Exportar/Importar
         document.getElementById('export-json-btn').addEventListener('click', () => this.exportJSON());
@@ -295,26 +256,22 @@ class BabyStockApp {
             const total = item.quantity * item.price;
             return `
             <tr>
-                <td>
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <div class="product-image" style="width: 40px; height: 40px; border-radius: var(--radius-sm); flex-shrink: 0;">
-                            ${item.photo ? `<img src="${item.photo}" alt="${this.escapeHtml(item.name)}">` : '<span style="font-size: 1.2rem;">📦</span>'}
-                        </div>
-                        <div>
-                            <div style="font-weight: 600; color: var(--text-primary);">${this.escapeHtml(item.name || 'Sin nombre')}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">
-                                ${this.escapeHtml(item.id)} | ${this.escapeHtml(item.category)} | ${this.escapeHtml(item.color)} | ${this.escapeHtml(item.size)}
-                            </div>
-                        </div>
+                <td data-label="Producto">
+                    <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary); margin-bottom: 0.25rem;">${this.escapeHtml(item.name || 'Sin nombre')}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                        <span style="display:inline-block; margin-right:8px;">🆔 ${this.escapeHtml(item.id)}</span>
+                        <span style="display:inline-block; margin-right:8px;">📂 ${this.escapeHtml(item.category)}</span>
+                        <span style="display:inline-block; margin-right:8px;">🎨 ${this.escapeHtml(item.color)}</span>
+                        <span style="display:inline-block;">📏 ${this.escapeHtml(item.size)}</span>
                     </div>
                 </td>
-                <td style="font-weight: 500;">${item.quantity}</td>
-                <td>$${item.price.toFixed(2)}</td>
-                <td style="font-weight: 600; color: var(--primary);">$${total.toFixed(2)}</td>
-                <td>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem;" onclick="app.editProduct('${this.escapeHtml(item.id)}')" title="Editar">✏️</button>
-                        <button class="btn btn-danger btn-outline" style="padding: 0.25rem 0.5rem;" onclick="app.deleteProduct('${this.escapeHtml(item.id)}')" title="Eliminar">🗑️</button>
+                <td data-label="Cantidad" style="font-weight: 600; font-size: 1.1rem;">${item.quantity}</td>
+                <td data-label="P. Unitario">$${item.price.toFixed(2)}</td>
+                <td data-label="P. Total" style="font-weight: 600; color: var(--primary);">$${total.toFixed(2)}</td>
+                <td data-label="Acciones">
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <button class="btn btn-outline" style="padding: 0.4rem 0.8rem;" onclick="app.editProduct('${this.escapeHtml(item.id)}')" title="Editar">✏️ Editar</button>
+                        <button class="btn btn-danger btn-outline" style="padding: 0.4rem 0.8rem;" onclick="app.deleteProduct('${this.escapeHtml(item.id)}')" title="Eliminar">🗑️</button>
                     </div>
                 </td>
             </tr>
@@ -561,7 +518,6 @@ class BabyStockApp {
                 observation: document.getElementById('product-observation').value,
                 quantity: parseInt(document.getElementById('product-quantity').value) || 0,
                 price: parseFloat(document.getElementById('product-price').value) || 0,
-                photo: this.currentPhoto,
                 createdAt: new Date().toISOString()
             };
 
