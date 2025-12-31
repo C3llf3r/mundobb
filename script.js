@@ -47,6 +47,20 @@ class BabyStockApp {
     // ===================================
     // UTILS & SEGURIDAD
     // ===================================
+    autoFormatSize(input) {
+        let value = input.value.toUpperCase().trim();
+        // Si es solo números (ej: "3" o "12"), agregar "-M"
+        if (/^\d+$/.test(value)) {
+            value = `${value}-M`;
+        }
+        input.value = value;
+    }
+
+    formatCurrency(amount) {
+        // Formato: CLP $1500.00 (Punto decimal, sin comas de miles)
+        return `CLP $${amount.toFixed(2)}`;
+    }
+
     escapeHtml(unsafe) {
         if (!unsafe) return '';
         return String(unsafe)
@@ -112,6 +126,12 @@ class BabyStockApp {
 
         // Exportar CSV
         document.getElementById('export-csv-btn').addEventListener('click', () => this.exportCSV());
+
+        // Exportar PDF (Modal)
+        document.getElementById('export-pdf-btn').addEventListener('click', () => this.openPDFModal());
+        document.getElementById('confirm-pdf-btn').addEventListener('click', () => this.generateCustomPDF());
+        document.getElementById('cancel-pdf-btn').addEventListener('click', () => this.closePDFModal());
+        document.getElementById('close-pdf-modal-btn').addEventListener('click', () => this.closePDFModal());
 
         // Exportar/Importar
         document.getElementById('export-json-btn').addEventListener('click', () => this.exportJSON());
@@ -194,7 +214,7 @@ class BabyStockApp {
 
         document.getElementById('total-products').textContent = totalProducts;
         document.getElementById('total-quantity').textContent = totalQuantity;
-        document.getElementById('total-value').textContent = `$${totalValue.toFixed(2)}`;
+        document.getElementById('total-value').textContent = this.formatCurrency(totalValue);
         document.getElementById('low-stock').textContent = lowStock;
 
         // Verificar estado del respaldo
@@ -266,8 +286,8 @@ class BabyStockApp {
                     </div>
                 </td>
                 <td data-label="Cantidad" style="font-weight: 600; font-size: 1.1rem;">${item.quantity}</td>
-                <td data-label="P. Unitario">$${item.price.toFixed(2)}</td>
-                <td data-label="P. Total" style="font-weight: 600; color: var(--primary);">$${total.toFixed(2)}</td>
+                <td data-label="P. Unitario">${this.formatCurrency(item.price)}</td>
+                <td data-label="P. Total" style="font-weight: 600; color: var(--primary);">${this.formatCurrency(total)}</td>
                 <td data-label="Acciones">
                     <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
                         <button class="btn btn-outline" style="padding: 0.4rem 0.8rem;" onclick="app.editProduct('${this.escapeHtml(item.id)}')" title="Editar">✏️ Editar</button>
@@ -709,14 +729,68 @@ class BabyStockApp {
     }
 
     // ===================================
-    // EXPORTAR PDF
+    // EXPORTAR PDF (PERSONALIZADO)
     // ===================================
-    exportPDF() {
+    openPDFModal() {
+        document.getElementById('pdf-options-modal').classList.add('active');
+    }
+
+    closePDFModal() {
+        document.getElementById('pdf-options-modal').classList.remove('active');
+    }
+
+    generateCustomPDF() {
         try {
             if (!window.jspdf) {
                 alert('La librería PDF no se ha cargado correctamente. Recarga la página.');
                 return;
             }
+
+            // 1. Identificar columnas seleccionadas
+            const checkboxes = document.querySelectorAll('#pdf-options-modal input[type="checkbox"]:checked');
+            const selectedKeys = Array.from(checkboxes).map(cb => cb.value);
+
+            if (selectedKeys.length === 0) {
+                this.showToast('Debes seleccionar al menos una columna', 'info');
+                return;
+            }
+
+            this.closePDFModal();
+
+            // 2. Definición de Columnas
+            const columnDefs = {
+                'id': { header: 'SKU', dataKey: 'id' },
+                'category': { header: 'Cat.', dataKey: 'category' },
+                'name': { header: 'Producto', dataKey: 'name' },
+                'color': { header: 'Color', dataKey: 'color' },
+                'size': { header: 'Talla', dataKey: 'size' },
+                'quantity': { header: 'Cant.', dataKey: 'quantity' },
+                'price': { header: 'Precio', isCurrency: true, dataKey: 'price' },
+                'total': { header: 'Total', isCurrency: true, isComputed: true }
+            };
+
+            // 3. Construir Cabeceras y Cuerpo
+            const headers = selectedKeys.map(key => columnDefs[key].header);
+            
+            const tableData = this.inventory.map(item => {
+                return selectedKeys.map(key => {
+                    const def = columnDefs[key];
+                    let value = '';
+
+                    if (key === 'total') {
+                        value = item.quantity * item.price;
+                    } else {
+                        value = item[def.dataKey] || '';
+                    }
+
+                    if (def.isCurrency) {
+                        return this.formatCurrency(value);
+                    }
+                    return value;
+                });
+            });
+
+            // 4. Generar Documento
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -727,27 +801,17 @@ class BabyStockApp {
             doc.text(`Fecha: ${new Date().toLocaleDateString('es-ES')}`, 14, 28);
             doc.text(`Total de Productos: ${this.inventory.length}`, 14, 34);
 
-            const tableData = this.inventory.map(item => [
-                item.id,
-                item.category,
-                item.name || '',
-                item.color || '',
-                item.size || '',
-                item.quantity,
-                `$${item.price.toFixed(2)}`,
-                `$${(item.quantity * item.price).toFixed(2)}`
-            ]);
-
             doc.autoTable({
                 startY: 40,
-                head: [['SKU', 'Cat.', 'Producto', 'Color', 'Talla', 'Cant.', 'Precio', 'Total']],
+                head: [headers],
                 body: tableData,
                 theme: 'striped',
                 headStyles: { fillColor: [37, 99, 235] }
             });
 
-            doc.save(`inventario_${new Date().toISOString().split('T')[0]}.pdf`);
-            this.showToast('PDF generado exitosamente', 'success');
+            doc.save(`reporte_inventario_${new Date().toISOString().split('T')[0]}.pdf`);
+            this.showToast('PDF personalizado generado', 'success');
+
         } catch (error) {
             console.error(error);
             alert('Error al generar PDF: ' + error.message);

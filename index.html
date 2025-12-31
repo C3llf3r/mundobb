@@ -226,12 +226,13 @@
                                     <label for="product-color" class="form-label">Color</label>
                                     <input type="text" id="product-color" class="form-input" placeholder="Ej: AZUL" oninput="this.value = this.value.toUpperCase()">
                                 </div>
-                                <!-- Talla -->
-                                <div class="form-group">
-                                    <label for="product-size" class="form-label">Talla</label>
-                                    <input type="text" id="product-size" class="form-input" placeholder="Ej: 0-3 m">
-                                </div>
-                                <!-- Observación -->
+                                                                <!-- Talla -->
+                                                                <div class="form-group">
+                                                                    <label for="product-size" class="form-label">Talla</label>
+                                                                    <input type="text" id="product-size" class="form-input" placeholder="Ej: 3-M" oninput="this.value = this.value.toUpperCase()" onblur="app.autoFormatSize(this)">
+                                                                </div>
+                                
+                                                                <!-- Observación -->
                                 <div class="form-group form-group-full">
                                     <label for="product-observation" class="form-label">Observación</label>
                                     <textarea id="product-observation" class="form-input form-textarea" placeholder="Notas adicionales..."></textarea>
@@ -295,7 +296,7 @@
                 </div>
                 <div class="form-group">
                     <label for="edit-product-size" class="form-label">Talla</label>
-                    <input type="text" id="edit-product-size" class="form-input">
+                    <input type="text" id="edit-product-size" class="form-input" oninput="this.value = this.value.toUpperCase()" onblur="app.autoFormatSize(this)">
                 </div>
                 <div class="form-group">
                     <label for="edit-product-observation" class="form-label">Observación</label>
@@ -314,6 +315,48 @@
                     <button type="button" class="btn btn-outline" id="cancel-edit-btn">Cancelar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div id="pdf-options-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Configurar Reporte PDF</h3>
+                <button class="modal-close" id="close-pdf-modal-btn">&times;</button>
+            </div>
+            <div class="form-container" style="border: none; padding: 0;">
+                <p style="margin-bottom: 1rem; color: var(--text-secondary);">Selecciona las columnas que deseas incluir:</p>
+                <div class="checkbox-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem;">
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" value="id" checked> <span style="font-size: 0.95rem;">SKU</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" value="category" checked> <span style="font-size: 0.95rem;">Categoría</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" value="name" checked> <span style="font-size: 0.95rem;">Producto</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" value="color" checked> <span style="font-size: 0.95rem;">Color</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" value="size" checked> <span style="font-size: 0.95rem;">Talla</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" value="quantity" checked> <span style="font-size: 0.95rem;">Cantidad</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" value="price" checked> <span style="font-size: 0.95rem;">Precio Unit.</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" value="total" checked> <span style="font-size: 0.95rem;">Precio Total</span>
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-primary" id="confirm-pdf-btn">Generar Reporte</button>
+                    <button type="button" class="btn btn-outline" id="cancel-pdf-btn">Cancelar</button>
+                </div>
+            </div>
         </div>
     </div>
 
