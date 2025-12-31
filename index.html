@@ -27,241 +27,227 @@
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
-    <!-- Header -->
+    <!-- 1. Encabezado Fijo -->
     <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <button class="hamburger-btn" id="hamburger-btn" onclick="app.toggleMenu()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <div class="logo">
-                    <span class="logo-text">MundoBB</span>
-                </div>
-                <button class="theme-toggle" id="theme-toggle" title="Cambiar tema" onclick="app.toggleTheme()">
-                    <span class="theme-icon"></span>
-                </button>
-                <nav class="nav" id="nav-menu">
-                    <button class="nav-close-btn" id="nav-close-btn" onclick="app.closeMenu()">&times;</button>
-                    <button class="nav-btn active" data-view="dashboard"
-                        onclick="app.switchView('dashboard'); app.closeMenu()">
-                        Dashboard
-                    </button>
-                    <button class="nav-btn" data-view="inventory"
-                        onclick="app.switchView('inventory'); app.closeMenu()">
-                        Inventario
-                    </button>
-                    <button class="nav-btn" data-view="register" onclick="app.switchView('register'); app.closeMenu()">
-                        Agregar
-                    </button>
-                </nav>
+        <div class="header-left">
+            <button class="hamburger-btn" id="hamburger-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="logo">
+                <span class="logo-text">BabyStock</span>
             </div>
+        </div>
+        <div class="header-right">
+            <button class="theme-toggle" id="theme-toggle" title="Cambiar tema">
+                <span class="theme-icon"></span>
+            </button>
         </div>
     </header>
 
-    <!-- Overlay para cerrar menú -->
-    <div class="nav-overlay" id="nav-overlay" onclick="app.closeMenu()"></div>
-
-    <!-- Main Content -->
-    <main class="main">
-        <div class="container">
-
-            <!-- Dashboard View -->
-            <section id="dashboard-view" class="view active">
-                <div class="view-header">
-                    <h2 class="view-title">Dashboard</h2>
-                    <div class="header-actions">
-                        <button class="btn btn-outline" id="export-json-btn">
-                            Exportar JSON
-                        </button>
-                        <button class="btn btn-outline" id="import-json-btn">
-                            Importar JSON
-                        </button>
-                        <input type="file" id="import-json-input" accept=".json" style="display: none;">
-                    </div>
+    <!-- Layout Container -->
+    <div class="app-layout">
+        
+        <!-- 2. Barra Lateral (Sidebar) -->
+        <aside class="sidebar" id="nav-menu">
+            <div class="sidebar-content">
+                <nav class="nav-links">
+                    <button class="nav-btn active" data-view="dashboard">
+                        <span class="nav-icon">📊</span> Dashboard
+                    </button>
+                    <button class="nav-btn" data-view="inventory">
+                        <span class="nav-icon">📦</span> Inventario
+                    </button>
+                    <button class="nav-btn" data-view="register">
+                        <span class="nav-icon">➕</span> Nuevo Producto
+                    </button>
+                </nav>
+                
+                <div class="sidebar-footer">
+                    <p class="user-info">Admin</p>
                 </div>
+            </div>
+        </aside>
 
-                <!-- Stats Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <p class="stat-label">Total Productos</p>
-                            <h3 class="stat-value" id="total-products">0</h3>
+        <!-- Overlay para cerrar menú en móvil -->
+        <div class="nav-overlay" id="nav-overlay"></div>
+
+        <!-- 3. Sección Principal de Contenido -->
+        <main class="main-content">
+            <div class="container">
+
+                <!-- Dashboard View -->
+                <section id="dashboard-view" class="view active">
+                    <!-- ... (Keep content logic handled by JS) ... -->
+                    <div class="view-header">
+                        <h2 class="view-title">Dashboard</h2>
+                        <div class="header-actions">
+                            <button class="btn btn-outline" id="export-json-btn">Exportar Backup</button>
+                            <button class="btn btn-outline" id="import-json-btn">Restaurar Backup</button>
+                            <input type="file" id="import-json-input" accept=".json" style="display: none;">
                         </div>
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <p class="stat-label">Cantidad Total</p>
-                            <h3 class="stat-value" id="total-quantity">0</h3>
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <p class="stat-label">Total Productos</p>
+                                <h3 class="stat-value" id="total-products">0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <p class="stat-label">Cantidad Total</p>
+                                <h3 class="stat-value" id="total-quantity">0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <p class="stat-label">Valor Total</p>
+                                <h3 class="stat-value" id="total-value">$0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <p class="stat-label">Stock Bajo</p>
+                                <h3 class="stat-value" id="low-stock">0</h3>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <p class="stat-label">Valor Total</p>
-                            <h3 class="stat-value" id="total-value">$0</h3>
+                    <!-- Export Buttons -->
+                    <div class="export-section">
+                        <h3 class="section-title">Reportes</h3>
+                        <div class="export-buttons">
+                            <button class="btn btn-primary" id="export-pdf-btn">Exportar PDF</button>
+                            <button class="btn btn-outline" id="export-excel-btn">Exportar Excel</button>
                         </div>
                     </div>
+                </section>
 
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <p class="stat-label">Stock Bajo</p>
-                            <h3 class="stat-value" id="low-stock">0</h3>
+                <!-- Inventory View -->
+                <section id="inventory-view" class="view">
+                    <div class="view-header">
+                        <h2 class="view-title">Inventario</h2>
+                        <div class="view-actions">
+                            <div class="search-box">
+                                <input type="text" id="search-input" class="search-input" placeholder="Buscar producto...">
+                            </div>
+                            <select id="category-filter" class="filter-select">
+                                <option value="">Todas las Categorías</option>
+                                <option value="Bodies">Bodies</option>
+                                <option value="Pijamas">Pijamas</option>
+                                <option value="Conjuntos">Conjuntos</option>
+                                <option value="Accesorios">Accesorios</option>
+                                <option value="Calzado">Calzado</option>
+                                <option value="Abrigos">Abrigos</option>
+                                <option value="Otros">Otros</option>
+                            </select>
                         </div>
                     </div>
-                </div>
+                    <div id="inventory-grid" class="inventory-grid"></div>
+                </section>
 
-                <!-- Export Buttons -->
-                <div class="export-section">
-                    <h3 class="section-title">Reportes</h3>
-                    <div class="export-buttons">
-                        <button class="btn btn-primary" id="export-pdf-btn">
-                            Exportar PDF
-                        </button>
-                        <button class="btn btn-outline" id="export-excel-btn">
-                            Exportar Excel
-                        </button>
+                <!-- Register View -->
+                <section id="register-view" class="view">
+                    <div class="view-header">
+                        <h2 class="view-title">Nuevo Producto</h2>
                     </div>
-                </div>
-            </section>
-
-            <!-- Inventory View -->
-            <section id="inventory-view" class="view">
-                <div class="view-header">
-                    <h2 class="view-title">Inventario</h2>
-                    <div class="view-actions">
-                        <div class="search-box">
-                            <input type="text" id="search-input" class="search-input" placeholder="Buscar producto...">
-                        </div>
-                        <select id="category-filter" class="filter-select">
-                            <option value="">Todas las Categorías</option>
-                            <option value="Bodies">Bodies</option>
-                            <option value="Pijamas">Pijamas</option>
-                            <option value="Conjuntos">Conjuntos</option>
-                            <option value="Accesorios">Accesorios</option>
-                            <option value="Calzado">Calzado</option>
-                            <option value="Abrigos">Abrigos</option>
-                            <option value="Otros">Otros</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Inventory Grid -->
-                <div id="inventory-grid" class="inventory-grid">
-                    <!-- Dynamic cards will be inserted here -->
-                </div>
-            </section>
-
-            <!-- Register View -->
-            <section id="register-view" class="view">
-                <div class="view-header">
-                    <h2 class="view-title">Nuevo Producto</h2>
-                </div>
-
-                <div class="form-container">
-                    <form id="product-form" class="product-form">
-                        <div class="form-grid">
-                            <!-- SKU -->
-                            <div class="form-group">
-                                <label for="product-sku" class="form-label">SKU</label>
-                                <div style="display: flex; gap: 0.5rem;">
-                                    <input type="text" id="product-sku" class="form-input" readonly>
-                                    <button type="button" class="btn btn-outline" id="generate-sku-btn">Generar</button>
+                    <div class="form-container">
+                        <form id="product-form" class="product-form">
+                            <div class="form-grid">
+                                <!-- SKU -->
+                                <div class="form-group">
+                                    <label for="product-sku" class="form-label">SKU</label>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <input type="text" id="product-sku" class="form-input" readonly>
+                                        <button type="button" class="btn btn-outline" id="generate-sku-btn">Generar</button>
+                                    </div>
+                                </div>
+                                <!-- Categoría -->
+                                <div class="form-group">
+                                    <label for="product-category" class="form-label">Categoría</label>
+                                    <select id="product-category" class="form-input">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Bodies">Bodies</option>
+                                        <option value="Pijamas">Pijamas</option>
+                                        <option value="Conjuntos">Conjuntos</option>
+                                        <option value="Accesorios">Accesorios</option>
+                                        <option value="Calzado">Calzado</option>
+                                        <option value="Abrigos">Abrigos</option>
+                                        <option value="Otros">Otros</option>
+                                    </select>
+                                </div>
+                                <!-- Producto -->
+                                <div class="form-group">
+                                    <label for="product-name" class="form-label">Producto</label>
+                                    <input type="text" id="product-name" class="form-input" placeholder="Nombre del producto" oninput="this.value = this.value.toUpperCase()">
+                                </div>
+                                <!-- Color -->
+                                <div class="form-group">
+                                    <label for="product-color" class="form-label">Color</label>
+                                    <input type="text" id="product-color" class="form-input" placeholder="Ej: AZUL" oninput="this.value = this.value.toUpperCase()">
+                                </div>
+                                <!-- Talla -->
+                                <div class="form-group">
+                                    <label for="product-size" class="form-label">Talla</label>
+                                    <input type="text" id="product-size" class="form-input" placeholder="Ej: 0-3 m">
+                                </div>
+                                <!-- Observación -->
+                                <div class="form-group form-group-full">
+                                    <label for="product-observation" class="form-label">Observación</label>
+                                    <textarea id="product-observation" class="form-input form-textarea" placeholder="Notas adicionales..."></textarea>
+                                </div>
+                                <!-- Cantidad -->
+                                <div class="form-group">
+                                    <label for="product-quantity" class="form-label">Cantidad</label>
+                                    <input type="number" id="product-quantity" class="form-input" min="0" value="1">
+                                </div>
+                                <!-- Precio -->
+                                <div class="form-group">
+                                    <label for="product-price" class="form-label">Precio</label>
+                                    <input type="number" id="product-price" class="form-input" min="0" step="0.01" placeholder="0.00">
+                                </div>
+                                <!-- Foto -->
+                                <div class="form-group form-group-full">
+                                    <label class="form-label">Imagen</label>
+                                    <div class="photo-upload">
+                                        <div class="photo-preview" id="photo-preview">
+                                            <span class="photo-placeholder">Sin imagen</span>
+                                            <img id="preview-image" style="display: none;">
+                                        </div>
+                                        <div class="photo-buttons">
+                                            <button type="button" class="btn btn-primary" id="camera-btn">Cámara</button>
+                                            <button type="button" class="btn btn-outline" id="upload-btn">Subir</button>
+                                            <button type="button" class="btn btn-danger" id="remove-photo-btn" style="display: none;">Eliminar</button>
+                                        </div>
+                                        <input type="file" id="file-input" accept="image/*" style="display: none;">
+                                        <input type="hidden" id="product-photo">
+                                    </div>
                                 </div>
                             </div>
-
-                            <!-- Categoría -->
-                            <div class="form-group">
-                                <label for="product-category" class="form-label">Categoría</label>
-                                <select id="product-category" class="form-input">
-                                    <option value="">Seleccionar...</option>
-                                    <option value="Bodies">Bodies</option>
-                                    <option value="Pijamas">Pijamas</option>
-                                    <option value="Conjuntos">Conjuntos</option>
-                                    <option value="Accesorios">Accesorios</option>
-                                    <option value="Calzado">Calzado</option>
-                                    <option value="Abrigos">Abrigos</option>
-                                    <option value="Otros">Otros</option>
-                                </select>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-large">Guardar</button>
+                                <button type="button" class="btn btn-outline btn-large" id="reset-form-btn">Limpiar</button>
                             </div>
+                        </form>
+                    </div>
+                </section>
 
-                            <!-- Producto (Nombre) -->
-                            <div class="form-group">
-                                <label for="product-name" class="form-label">Producto</label>
-                                <input type="text" id="product-name" class="form-input"
-                                    placeholder="Nombre del producto">
-                            </div>
+            </div>
 
-                            <!-- Talla -->
-                            <div class="form-group">
-                                <label for="product-size" class="form-label">Talla</label>
-                                <input type="text" id="product-size" class="form-input" placeholder="Ej: 0-3 m">
-                            </div>
-
-                            <!-- Observación -->
-                            <div class="form-group form-group-full">
-                                <label for="product-observation" class="form-label">Observación</label>
-                                <textarea id="product-observation" class="form-input form-textarea"
-                                    placeholder="Notas adicionales..."></textarea>
-                            </div>
-
-                            <!-- Cantidad -->
-                            <div class="form-group">
-                                <label for="product-quantity" class="form-label">Cantidad</label>
-                                <input type="number" id="product-quantity" class="form-input" min="0" value="1">
-                            </div>
-
-                            <!-- Precio de Venta -->
-                            <div class="form-group">
-                                <label for="product-price" class="form-label">Precio</label>
-                                <input type="number" id="product-price" class="form-input" min="0" step="0.01"
-                                    placeholder="0.00">
-                            </div>
-
-                            <!-- Foto -->
-                            <div class="form-group form-group-full">
-                                <label class="form-label">Imagen</label>
-                                <div class="photo-upload">
-                                    <div class="photo-preview" id="photo-preview">
-                                        <span class="photo-placeholder">Sin imagen</span>
-                                        <img id="preview-image" style="display: none;">
-                                    </div>
-                                    <div class="photo-buttons">
-                                        <button type="button" class="btn btn-primary" id="camera-btn">
-                                            Cámara
-                                        </button>
-                                        <button type="button" class="btn btn-outline" id="upload-btn">
-                                            Subir
-                                        </button>
-                                        <button type="button" class="btn btn-danger" id="remove-photo-btn"
-                                            style="display: none;">
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                    <input type="file" id="file-input" accept="image/*" style="display: none;">
-                                    <input type="hidden" id="product-photo">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary btn-large">
-                                Guardar
-                            </button>
-                            <button type="button" class="btn btn-outline btn-large" id="reset-form-btn">
-                                Limpiar
-                            </button>
-                        </div>
-                    </form>
+            <!-- 4. Pie de Página Estático -->
+            <footer class="footer">
+                <div class="container">
+                    <p class="footer-text">© 2025 BabyStock</p>
                 </div>
-            </section>
+            </footer>
+        </main>
+    </div>
 
-        </div>
-    </main>
-
-    <!-- Camera Modal -->
+    <!-- Modals (Camera & Edit) remain outside the layout flow -->
     <div id="camera-modal" class="modal">
         <div class="modal-content modal-large">
             <div class="modal-header">
@@ -273,17 +259,12 @@
                 <canvas id="camera-canvas" style="display: none;"></canvas>
             </div>
             <div class="modal-actions">
-                <button class="btn btn-primary btn-large" id="capture-btn">
-                    Capturar
-                </button>
-                <button class="btn btn-outline btn-large" id="cancel-camera-btn">
-                    Cancelar
-                </button>
+                <button class="btn btn-primary btn-large" id="capture-btn">Capturar</button>
+                <button class="btn btn-outline btn-large" id="cancel-camera-btn">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <!-- Edit Modal -->
     <div id="edit-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -292,63 +273,45 @@
             </div>
             <form id="edit-form">
                 <input type="hidden" id="edit-product-id">
-
                 <div class="form-group">
                     <label for="edit-product-category" class="form-label">Categoría</label>
                     <select id="edit-product-category" class="form-input">
-                        <option value="Bodies">Bodies</option>
-                        <option value="Pijamas">Pijamas</option>
-                        <option value="Conjuntos">Conjuntos</option>
-                        <option value="Accesorios">Accesorios</option>
-                        <option value="Calzado">Calzado</option>
-                        <option value="Abrigos">Abrigos</option>
+                        <option value="Ropa">Ropa</option>
+                        <option value="Accesorio">Accesorio</option>
                         <option value="Otros">Otros</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="edit-product-name" class="form-label">Producto</label>
-                    <input type="text" id="edit-product-name" class="form-input">
+                    <input type="text" id="edit-product-name" class="form-input" oninput="this.value = this.value.toUpperCase()">
                 </div>
-
+                <div class="form-group">
+                    <label for="edit-product-color" class="form-label">Color</label>
+                    <input type="text" id="edit-product-color" class="form-input" oninput="this.value = this.value.toUpperCase()">
+                </div>
                 <div class="form-group">
                     <label for="edit-product-size" class="form-label">Talla</label>
                     <input type="text" id="edit-product-size" class="form-input">
                 </div>
-
                 <div class="form-group">
                     <label for="edit-product-observation" class="form-label">Observación</label>
                     <textarea id="edit-product-observation" class="form-input form-textarea"></textarea>
                 </div>
-
                 <div class="form-group">
                     <label for="edit-product-quantity" class="form-label">Cantidad</label>
                     <input type="number" id="edit-product-quantity" class="form-input" min="0">
                 </div>
-
                 <div class="form-group">
                     <label for="edit-product-price" class="form-label">Precio de Venta</label>
                     <input type="number" id="edit-product-price" class="form-input" min="0" step="0.01">
                 </div>
-
                 <div class="modal-actions">
-                    <button type="submit" class="btn btn-primary">
-                        Guardar Cambios
-                    </button>
-                    <button type="button" class="btn btn-outline" id="cancel-edit-btn">
-                        Cancelar
-                    </button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <button type="button" class="btn btn-outline" id="cancel-edit-btn">Cancelar</button>
                 </div>
             </form>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p class="footer-text">© 2025 BabyStock</p>
-        </div>
-    </footer>
 
     <script src="script.js"></script>
 </body>
