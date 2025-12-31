@@ -29,7 +29,7 @@ const INITIAL_INVENTORY = [
 // ===================================
 // CLASE PRINCIPAL
 // ===================================
-class BabyStockApp {
+class MundoBBStockApp {
     constructor() {
         this.inventory = this.loadInventory();
         this.currentView = 'dashboard';
@@ -57,8 +57,8 @@ class BabyStockApp {
     }
 
     formatCurrency(amount) {
-        // Formato: CLP $1500.00 (Punto decimal, sin comas de miles)
-        return `CLP $${amount.toFixed(2)}`;
+        // Formato: CLP $1,500 (Sin decimales, coma para miles)
+        return `CLP $${Math.round(amount).toLocaleString('en-US')}`;
     }
 
     escapeHtml(unsafe) {
@@ -75,12 +75,13 @@ class BabyStockApp {
     // PERSISTENCIA
     // ===================================
     loadInventory() {
-        const stored = localStorage.getItem('babystock_inventory');
+        // Migración: Intentar leer nueva clave, si no existe, leer antigua
+        const stored = localStorage.getItem('mundobbstock_inventory') || localStorage.getItem('babystock_inventory');
         return stored ? JSON.parse(stored) : INITIAL_INVENTORY;
     }
 
     saveInventory() {
-        localStorage.setItem('babystock_inventory', JSON.stringify(this.inventory));
+        localStorage.setItem('mundobbstock_inventory', JSON.stringify(this.inventory));
     }
 
     // ===================================
@@ -626,7 +627,7 @@ class BabyStockApp {
             const backupData = {
                 metadata: {
                     version: "1.0",
-                    appName: "BabyStock",
+                    appName: "MundoBBStock",
                     exportDate: new Date().toISOString(),
                     itemCount: this.inventory.length
                 },
@@ -640,7 +641,7 @@ class BabyStockApp {
             const link = document.createElement('a');
             link.href = url;
             const dateStr = new Date().toISOString().split('T')[0];
-            link.download = `babystock_backup_${dateStr}.json`;
+            link.download = `mundobbstock_backup_${dateStr}.json`;
             
             document.body.appendChild(link);
             link.click();
@@ -873,4 +874,4 @@ class BabyStockApp {
 // ===================================
 // INICIALIZAR
 // ===================================
-window.app = new BabyStockApp();
+window.app = new MundoBBStockApp();
