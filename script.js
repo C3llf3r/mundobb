@@ -506,41 +506,6 @@ class MundoBBStockApp {
         this.showToast('Foto capturada (350x350px)', 'success');
     }
 
-    handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                const compressed = await this.compressImage(e.target.result);
-                this.setPhoto(compressed);
-                this.showToast('Imagen cargada exitosamente', 'success');
-            } catch (err) {
-                console.error(err);
-                this.showToast('Error procesando imagen', 'error');
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-
-    setPhoto(photoData) {
-        this.currentPhoto = photoData;
-        document.getElementById('product-photo').value = photoData;
-        document.getElementById('preview-image').src = photoData;
-        document.getElementById('preview-image').style.display = 'block';
-        document.querySelector('.photo-placeholder').style.display = 'none';
-        document.getElementById('remove-photo-btn').style.display = 'inline-flex';
-    }
-
-    removePhoto() {
-        this.currentPhoto = '';
-        document.getElementById('product-photo').value = '';
-        document.getElementById('preview-image').style.display = 'none';
-        document.querySelector('.photo-placeholder').style.display = 'block';
-        document.getElementById('remove-photo-btn').style.display = 'none';
-    }
-
     // ===================================
     // CRUD
     // ===================================
@@ -581,7 +546,6 @@ class MundoBBStockApp {
 
     resetForm() {
         document.getElementById('product-form').reset();
-        this.removePhoto();
     }
 
     editProduct(productId) {
