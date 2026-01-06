@@ -124,13 +124,7 @@ class MundoBBStockApp {
         document.getElementById('product-form').addEventListener('submit', (e) => this.handleSubmit(e));
         document.getElementById('reset-form-btn').addEventListener('click', () => this.resetForm());
         
-        // Generación automática de SKU
-        const skuTriggers = ['product-category', 'product-name', 'product-color', 'product-size'];
-        skuTriggers.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('input', () => this.generateSKU());
-            if (el && id === 'product-category') el.addEventListener('change', () => this.generateSKU()); // Para el select
-        });
+
 
         // Búsqueda y filtros
         const filterHandler = () => this.filterInventory();
@@ -391,36 +385,7 @@ class MundoBBStockApp {
         this.showToast('CSV generado exitosamente', 'success');
     }
 
-    // ===================================
-    // GENERACIÓN DE SKU (INTELIGENTE)
-    // ===================================
-    generateSKU() {
-        const category = document.getElementById('product-category').value;
-        const name = document.getElementById('product-name').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-        const color = document.getElementById('product-color').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-        const size = document.getElementById('product-size').value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
 
-        // Prefijos de Categoría
-        const prefixes = {
-            'Ropa': 'ROP',
-            'Accesorios': 'ACC',
-            'Otros': 'OTR'
-        };
-        const catCode = prefixes[category] || 'GEN';
-
-        // Códigos de Atributos
-        const nameCode = name.substring(0, 4);
-        const colorCode = color.substring(0, 3);
-        const sizeCode = size; // Talla completa
-
-        // Construir SKU solo si hay datos suficientes
-        let newSKU = catCode;
-        if (nameCode) newSKU += `-${nameCode}`;
-        if (colorCode) newSKU += `-${colorCode}`;
-        if (sizeCode) newSKU += `-${sizeCode}`;
-
-        document.getElementById('product-sku').value = newSKU;
-    }
 
     // ===================================
     // MANEJO DE FOTOS
@@ -492,7 +457,7 @@ class MundoBBStockApp {
             const colorInput = document.getElementById('product-color').value.trim();
 
             const newProduct = {
-                id: document.getElementById('product-sku').value,
+                id: 'PROD-' + Date.now(),
                 category: document.getElementById('product-category').value,
                 name: document.getElementById('product-name').value.toUpperCase(),
                 color: colorInput ? colorInput.toUpperCase() : 'N/A',
